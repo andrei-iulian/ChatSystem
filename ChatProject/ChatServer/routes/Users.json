@@ -1,13 +1,20 @@
 [   {"Users": 
         [
-            {"username": "Andrei", "UserType": "Super", "Groups": ["Global", "KoolKids"]},
-            {"username": "Jeff", "UserType": "Group", "Groups": ["Global", "KoolKids", "Bros"]},
-            {"username": "Greg", "UserType": "Normie", "Groups": ["Global", "Bros"]}
+            {"Username": "Andrei", "UserType": "Super", "Groups": ["Global", "KoolKids"]},
+            {"Username": "Jeff", "UserType": "Group", "Groups": ["Global", "KoolKids", "Bros"]},
+            {"Username": "Greg", "UserType": "Normie", "Groups": ["Global", "Bros"]}
         ]
     }, {"Groups":
         [
-        
+            {"Group": "Global", "Channels": ["One"]},
+            {"Group": "KoolKids", "Channels": ["One"]},
+            {"Group": "Bros", "Channels": ["One"]}
+        ]
+    }, {"Channels":
+        [
+            {"Channel": "Global:One", "Data": []},
+            {"Channel": "KoolKids:One", "Data": []},
+            {"Channel": "Bros:One", "Data": []}
         ]
     }
-    
 ]
