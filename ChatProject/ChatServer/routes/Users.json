@@ -1,0 +1,13 @@
+[   {"Users": 
+        [
+            {"username": "Andrei", "UserType": "Super", "Groups": ["Global", "KoolKids"]},
+            {"username": "Jeff", "UserType": "Group", "Groups": ["Global", "KoolKids", "Bros"]},
+            {"username": "Greg", "UserType": "Normie", "Groups": ["Global", "Bros"]}
+        ]
+    }, {"Groups":
+        [
+        
+        ]
+    }
+    
+]
