@@ -28,8 +28,9 @@ module.exports = function(app, fs) {
                 console.log(err);
                 res.send({'GroupData': '', 'success': false});
             } else {
+               
                 Database = JSON.parse(data);
-                Groups = Database[0].Groups;
+                Groups = Database[1].Groups;
                 for (let i = 0; i < Groups.length; i++) {
                     if (Groups[i].Group === groupName) {
                         res.send({'GroupData': JSON.stringify(Groups[i]), 'success': true});

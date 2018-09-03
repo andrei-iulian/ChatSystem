@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 export interface GroupData {
-  channels: string;
+  GroupData: string;
   success: boolean;
 }
 
@@ -14,6 +14,7 @@ export interface GroupData {
 })
 export class GroupComponent implements OnInit {
   @Input('groupName') groupName: string;
+  groupData: Object;
   isCollapsed = false;
 
   constructor(private router: Router, private http: HttpClient) { }
@@ -30,7 +31,7 @@ export class GroupComponent implements OnInit {
     this.GetGroup(this.groupName).subscribe(
       data => {
         if (data.success) {
-          console.log('GotHere 4');
+          this.groupData = JSON.parse(data.GroupData);
         }
       },
       error => {

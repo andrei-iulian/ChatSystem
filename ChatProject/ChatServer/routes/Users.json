@@ -7,8 +7,8 @@
     }, {"Groups":
         [
             {"Group": "Global", "Channels": ["One"]},
-            {"Group": "KoolKids", "Channels": ["One"]},
-            {"Group": "Bros", "Channels": ["One"]}
+            {"Group": "KoolKids", "Channels": ["Two"]},
+            {"Group": "Bros", "Channels": ["Three"]}
         ]
     }, {"Channels":
         [
