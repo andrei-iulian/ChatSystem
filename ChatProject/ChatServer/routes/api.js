@@ -42,6 +42,30 @@ module.exports = function(app, fs) {
         })
     });
 
+    app.post('/api/ChannelData', (req, res) => {
+        var groupName = req.body.group;
+        var channel = req.body.channel;
+        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
+            if(err) {
+                console.log(err);
+                res.send({channelData: '', success: false});
+            } else {
+                Database = JSON.parse(data);
+                Channels = Database[2].Channels;
+                channelName = groupName + ":" + channel;
+                console.log(channelName);
+                for (let i = 0; i < Channels.length; i++) {
+                    console.log(Channels[i]);
+                    console.log(Channels[i].Channel === channelName);
+                    if(Channels[i].Channel === channelName) {
+                        res.send({channelData: JSON.stringify(Channels[i]), success: true});
+                        return;
+                    }
+                }
+            }
+        })
+    });
+
     app.post('/api/AddGroup', (req, res) => {
         var groupName = req.body.groupName;
         var user = req.body.User;

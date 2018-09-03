@@ -13,8 +13,8 @@
 }, {"Channels":
     [
         {"Channel": "Global:One", "Users": ["Andrei", "Jeff", "Greg"], "Data": []},
-        {"Channel": "KoolKids:One", "Users": ["Andrei", "Jeff"], "Data": []},
-        {"Channel": "Bros:One", "Users": ["Jeff", "Greg"], "Data": []}
+        {"Channel": "KoolKids:Two", "Users": ["Andrei", "Jeff"], "Data": []},
+        {"Channel": "Bros:Three", "Users": ["Jeff", "Greg"], "Data": []}
     ]
 }
 ]

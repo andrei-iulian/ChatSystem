@@ -47,6 +47,14 @@ export class GroupComponent implements OnInit {
     );
   }
 
+  JoinChannel(channel: string) {
+    if (typeof(Storage) !== 'undefined') {
+      localStorage.setItem('channel', channel);
+      localStorage.setItem('group', this.groupName);
+      this.router.navigateByUrl('/channel');
+    }
+  }
+
   getGroupData() {
     this.GetGroup(this.groupName).subscribe(
       data => {

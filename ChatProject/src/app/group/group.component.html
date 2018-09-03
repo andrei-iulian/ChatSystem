@@ -21,7 +21,7 @@
             <div *ngFor="let channel of groupData.Channels">
                 Channel: {{channel}}
                 <button *ngIf="userType !== 'Normie'" class="btn bg-danger float-right" type="DeleteGroup">Delete</button>
-                <button class="btn bg-success mr-5 float-right">Join</button>
+                <button class="btn bg-success mr-5 float-right" (click)="JoinChannel(channel)">Join</button>
            </div>
         </div>
       </div>

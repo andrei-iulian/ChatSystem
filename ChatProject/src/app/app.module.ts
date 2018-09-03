@@ -9,10 +9,12 @@ import { LoginComponent } from './login/login.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DashComponent } from './dash/dash.component';
 import { GroupComponent } from './group/group.component';
+import { ChannelComponent } from './channel/channel.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
-  {path: 'dash', component: DashComponent}
+  {path: 'dash', component: DashComponent},
+  {path: 'channel', component: ChannelComponent}
 ];
 
 @NgModule({
@@ -20,7 +22,8 @@ const routes: Routes = [
     AppComponent,
     LoginComponent,
     DashComponent,
-    GroupComponent
+    GroupComponent,
+    ChannelComponent
   ],
   imports: [
     NgbModule,
