@@ -7,6 +7,10 @@ export interface ChannelData {
   success: boolean;
 }
 
+export interface DeleteChannelResponse {
+  success: boolean;
+}
+
 export interface ChannelObject {
   Channel: string;
   Users: object;
@@ -20,6 +24,7 @@ export interface ChannelObject {
 })
 
 export class ChannelComponent implements OnInit {
+  userType: string;
   username: string;
   group: string;
   channel: string;
@@ -28,6 +33,7 @@ export class ChannelComponent implements OnInit {
   constructor(private router: Router, private http: HttpClient) { }
 
   ngOnInit() {
+    this.userType = localStorage.getItem('type');
     this.username = localStorage.getItem('username');
     this.group = localStorage.getItem('group');
     this.channel = localStorage.getItem('channel');
@@ -39,15 +45,26 @@ export class ChannelComponent implements OnInit {
     this.router.navigateByUrl('/dash');
   }
 
+  DeleteChannel() {
+    this.http.post<DeleteChannelResponse>('/api/DeleteChannel', {channel: this.channel, group: this.group})
+    .subscribe( data => {
+      if (data.success === true) {
+        console.log('Deleted Channel');
+        this.Back();
+      } else {
+        alert('Failed to Delete Channel');
+      }
+    });
+  }
+
   getChannelData() {
     this.http.post<ChannelData>('/api/ChannelData', {channel: this.channel, group: this.group})
     .subscribe( data => {
-        if (data.success === false) {
+        if (data.success === true) {
+          this.channelData = JSON.parse(data.channelData);
+        } else {
           alert('Failed to Retrieve Channel Data');
           this.router.navigateByUrl('/dash');
-        } else {
-          this.channelData = JSON.parse(data.channelData);
-          console.log(this.channelData.Users);
         }
       }
     );

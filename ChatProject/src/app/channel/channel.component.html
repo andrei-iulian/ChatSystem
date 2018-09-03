@@ -10,7 +10,7 @@
             <div class="navbar-brand">
               <h2>Welcome {{username}}, in {{group}}: {{channel}}</h2>
             </div>
-            <button type="button" class="btn btn-default navbar-btn float-right" (click)="Back()">Back</button>
+            <button type="button" class="btn btn-grey navbar-btn float-right" (click)="Back()">Back</button>
         </div>
     </nav>   
 
@@ -40,6 +40,11 @@
         </div>
     </div>
 
+    <div class = "mx-auto" style="width: 700px; height: 100px">
+      <button *ngIf="userType !== 'Normie'" class="btn bg-danger left-right" (click) = "DeleteChannel()">Delete Channel</button>
+      
+      <button *ngIf="userType !== 'Normie'" class="btn bg-danger float-right" (click) = "DeleteChannel()">Remove User</button>
+    </div>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   </body>
 </html>
