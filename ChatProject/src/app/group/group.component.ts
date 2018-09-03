@@ -1,10 +1,14 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input} from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 export interface GroupData {
   GroupData: string;
   success: boolean;
+}
+
+export interface DeleteGroupResponse {
+  result: string;
 }
 
 @Component({
@@ -14,6 +18,9 @@ export interface GroupData {
 })
 export class GroupComponent implements OnInit {
   @Input('groupName') groupName: string;
+  @Input('userType') userType: string;
+  deleted = false;
+  buttonID: string;
   groupData: Object;
   isCollapsed = false;
 
@@ -27,6 +34,19 @@ export class GroupComponent implements OnInit {
     return this.http.post<GroupData>('/api/GroupData', {groupName: group});
   }
 
+  DeleteGroup() {
+    this.http.post<DeleteGroupResponse>('/api/DeleteGroup', {groupName: this.groupName}).subscribe(
+      data => {
+        if (data.result === 'Failed') {
+          alert('Failed to Delete Group');
+        } else {
+          console.log('Deleted Group');
+          this.deleted = true;
+        }
+      }
+    );
+  }
+
   getGroupData() {
     this.GetGroup(this.groupName).subscribe(
       data => {
@@ -37,6 +57,7 @@ export class GroupComponent implements OnInit {
       error => {
         alert('failed');
       });
+
   }
 
 }

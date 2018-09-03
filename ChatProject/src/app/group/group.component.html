@@ -5,13 +5,13 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   </head>
   <body>
-    <div class="card">
+    <div *ngIf = "!deleted" class="card">
       <div class="card-header" id="headingOne">
         <h5 class="mb-0">
           <button class="btn btn-link" type="button" (click)="isCollapsed = !isCollapsed" data-target="#collapseOne">
             {{groupName}}
           </button>
-          <button class="btn btn-primary float-right" type="CreateGroup">Delete</button>
+           <button *ngIf="userType !== 'Normie'" class="btn bg-danger float-right" (click) = "DeleteGroup()">Delete</button>
         </h5>
       </div>
      
@@ -20,8 +20,9 @@
         <div class="card-body">
             <div *ngFor="let channel of groupData.Channels">
                 Channel: {{channel}}
-                <button class="btn btn-primary float-right" type="DeleteGroup">Delete</button>
-            </div>
+                <button *ngIf="userType !== 'Normie'" class="btn bg-danger float-right" type="DeleteGroup">Delete</button>
+                <button class="btn bg-success mr-5 float-right">Join</button>
+           </div>
         </div>
       </div>
     </div>        
