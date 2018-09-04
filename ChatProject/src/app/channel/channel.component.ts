@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { APIResponse } from '../dash/dash.component';
 
 export interface ChannelData {
   channelData: string;
   success: boolean;
 }
 
-export interface DeleteResponse {
+export interface APIResponse {
   result: string;
 }
 
@@ -80,7 +81,7 @@ export class ChannelComponent implements OnInit {
   }
 
   RemoveUser() {
-    this.http.post<DeleteResponse>('/api/DelUserChannel', {channel: this.channel,
+    this.http.post<APIResponse>('/api/DelUserChannel', {channel: this.channel,
       group: this.group, user: this.nUserName}).subscribe( data => {
       if (data.result === 'Success') {
         console.log('Deleted A User');

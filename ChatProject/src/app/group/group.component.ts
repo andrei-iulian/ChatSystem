@@ -2,14 +2,11 @@ import { Component, OnInit, Input} from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { APIResponse } from '../dash/dash.component';
 
 export interface GroupData {
   GroupData: string;
   success: boolean;
-}
-
-export interface HttpResponse {
-  result: string;
 }
 
 @Component({
@@ -49,7 +46,7 @@ export class GroupComponent implements OnInit {
   }
 
   CreateChannel(channelName: string) {
-    this.http.post<HttpResponse>('/api/CreateChannel', {groupName: this.groupName, channelName: channelName, userName: this.username})
+    this.http.post<APIResponse>('/api/CreateChannel', {groupName: this.groupName, channelName: channelName, userName: this.username})
     .subscribe( data => {
       if (data.result === 'Success') {
         console.log('Created Channel');
@@ -63,7 +60,7 @@ export class GroupComponent implements OnInit {
   }
 
   DeleteGroup() {
-    this.http.post<HttpResponse>('/api/DeleteGroup', {groupName: this.groupName}).subscribe(
+    this.http.post<APIResponse>('/api/DeleteGroup', {groupName: this.groupName}).subscribe(
       data => {
         if (data.result === 'Failed') {
           alert('Failed to Delete Group');

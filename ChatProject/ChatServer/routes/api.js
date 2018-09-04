@@ -140,10 +140,8 @@ module.exports = function(app, fs) {
                 }
 
                 if (exists && groupExists && update) { 
-                    console.log(Users[loc].Groups);
                     Users[loc].UserType = type;
                     for (let i = 0; i < Users[loc].Groups.length; i++) {
-                        console.log(Users[loc].Groups[i] === group);
                         if (Users[loc].Groups[i] === group) {
                             break;
                         }
