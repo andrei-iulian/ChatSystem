@@ -1,4 +1,6 @@
 module.exports = function(app, fs) {
+
+    // Function for returning all the relevant User data
     app.post('/api/UserData', (req, res) => {
         var uname = req.body.username;
         var Users;
@@ -20,6 +22,7 @@ module.exports = function(app, fs) {
         })
     });
 
+    // Function for returning the group data for a particular group
     app.post('/api/GroupData', (req, res) => {
         var groupName = req.body.groupName;
         var Groups;
@@ -42,6 +45,7 @@ module.exports = function(app, fs) {
         })
     });
 
+    // Function for returning the data for a particular channel
     app.post('/api/ChannelData', (req, res) => {
         var groupName = req.body.group;
         var channel = req.body.channel;
@@ -63,6 +67,7 @@ module.exports = function(app, fs) {
         })
     });
 
+    // Function for creating a new channel
     app.post('/api/CreateChannel', (req, res) => {
         var groupName = req.body.groupName;
         var channel = req.body.channelName;
@@ -105,6 +110,8 @@ module.exports = function(app, fs) {
         });
     });
 
+    // Function that hands both user updating and user creation depending on the value of
+    // the update boolean parameter
     app.post('/api/UpdateUser', (req, res) => {
         var group = req.body.groupName;
         var type = req.body.userType;
@@ -165,12 +172,14 @@ module.exports = function(app, fs) {
                         res.send({result: 'ReadFail'});
                     }
                     res.send({result: 'Success'});
-                    console.log("Added User: " + group + "-" + user);
+                    console.log("Created/Updated User: " + group + "-" + user);
                 });
             }
         })
     });
 
+    // Function for adding a user to a channel, function creates
+    // the user if they doesnt exist
     app.post('/api/AddUserChannel', (req, res) => {
         var channel = req.body.channel;
         var group = req.body.group;
@@ -252,6 +261,7 @@ module.exports = function(app, fs) {
         })
     });
 
+    // Function for adding a new group
     app.post('/api/AddGroup', (req, res) => {
         var groupName = req.body.groupName;
         var user = req.body.User;
@@ -292,6 +302,7 @@ module.exports = function(app, fs) {
         })
     });
 
+    // Function for deleting a user from a particular channel
     app.post('/api/DelUserChannel', (req, res) => {
         var channel = req.body.channel;
         var group = req.body.group;
@@ -331,6 +342,7 @@ module.exports = function(app, fs) {
 
     });
 
+    // Function that deletes a channel
     app.post('/api/DeleteChannel', (req, res) => {
         var group = req.body.group;
         var channel = req.body.channel;
@@ -373,6 +385,7 @@ module.exports = function(app, fs) {
         });
     });
 
+    // Function for deleting a group
     app.post('/api/DeleteGroup', (req, res) => {
         var groupName = req.body.groupName;
         
@@ -405,7 +418,7 @@ module.exports = function(app, fs) {
                 fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
                     if (err) {
                         console.log(err);
-                        res.send({result: 'Failed'});
+                        res.send({result: 'ReadFail'});
                     }
                     res.send({result: "Success"});
                     console.log("Deleted Group: " + groupName);

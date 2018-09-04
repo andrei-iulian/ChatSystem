@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 
 
 
@@ -18,6 +16,8 @@ export class LoginComponent implements OnInit {
 
   constructor(private router: Router) { }
 
+  // Function for storing the username in local storage and
+  // navigating to the dashboard
   loginUser(event) {
     event.preventDefault();
     if (typeof(Storage) !== 'undefined') {

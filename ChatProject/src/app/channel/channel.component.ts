@@ -9,10 +9,6 @@ export interface ChannelData {
   success: boolean;
 }
 
-export interface APIResponse {
-  result: string;
-}
-
 export interface ChannelResponse {
   success: boolean;
 }
@@ -49,10 +45,13 @@ export class ChannelComponent implements OnInit {
     this.getChannelData();
   }
 
+  // Fuction using the Router to navigate back to the dashboard
   Back() {
     this.router.navigateByUrl('/dash');
   }
 
+  // Function that Pops up the form for either adding or removing a user
+  // depending on which button was pressed.
   open(content, type: string) {
     this.modalService.open(content, {ariaLabelledBy: 'ChannelTitle'}).result.then((result) => {
       if (result === 'Create') {
@@ -68,6 +67,8 @@ export class ChannelComponent implements OnInit {
     }, (reason) => {  });
   }
 
+  // Function that handles the deletion of a channel by sending a post
+  // request to the server
   DeleteChannel() {
     this.http.post<ChannelResponse>('/api/DeleteChannel', {channel: this.channel, group: this.group})
     .subscribe( data => {
@@ -80,6 +81,8 @@ export class ChannelComponent implements OnInit {
     });
   }
 
+  // Function that handles the deletion of a user by sending a post
+  // request to the server
   RemoveUser() {
     this.http.post<APIResponse>('/api/DelUserChannel', {channel: this.channel,
       group: this.group, user: this.nUserName}).subscribe( data => {
@@ -94,6 +97,8 @@ export class ChannelComponent implements OnInit {
     });
   }
 
+  // Function that handles the addition of a user by sending a post
+  // request to the server
   AddUser() {
     this.http.post<ChannelResponse>('/api/AddUserChannel', {channel: this.channel, group: this.group, user: this.nUserName})
     .subscribe( data => {
@@ -106,6 +111,8 @@ export class ChannelComponent implements OnInit {
     });
   }
 
+  // Function that gets the channel data from the server and displays
+  // it to the client, if it fails the function returns to the dashboard
   getChannelData() {
     this.http.post<ChannelData>('/api/ChannelData', {channel: this.channel, group: this.group})
     .subscribe( data => {
@@ -113,7 +120,7 @@ export class ChannelComponent implements OnInit {
           this.channelData = JSON.parse(data.channelData);
         } else {
           alert('Failed to Retrieve Channel Data');
-          this.router.navigateByUrl('/dash');
+          this.Back();
         }
       }
     );

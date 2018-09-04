@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -42,10 +41,8 @@ export class DashComponent implements OnInit {
     this.getUserData();
   }
 
-  GetUser(uname: string) {
-    return this.http.post<User>('/api/UserData', {username: uname});
-  }
-
+  // Function that Pops up the form for either creating a group or
+  // updating/creating a user depending on which button was pressed.
   open(content) {
     this.modalService.open(content, {ariaLabelledBy: 'CreateTitle'}).result.then((result) => {
       if (result === 'Create') {
@@ -60,11 +57,15 @@ export class DashComponent implements OnInit {
     }, (reason) => {  });
   }
 
+  // Function for logging out of the dashboard and returing the client
+  // to the login page
   Logout() {
     localStorage.removeItem('username');
     this.router.navigateByUrl('/login');
   }
 
+  // Function for updating a particular Users userType and adding a
+  // user to a group
   UpdateUser() {
     this.http.post<APIResponse>('/api/UpdateUser', {groupName: this.nGroupName,
       userName: this.nUser, userType: this.nUserType, update: this.update}).subscribe(
@@ -82,6 +83,8 @@ export class DashComponent implements OnInit {
     );
   }
 
+  // Function for creating a new group, the function puts the user
+  // that created the function into the group
   CreateGroup(GroupName: string) {
     this.http.post<APIResponse>('/api/AddGroup', {groupName: GroupName, User: this.username}).subscribe(
       data => {
@@ -97,13 +100,17 @@ export class DashComponent implements OnInit {
     );
   }
 
+  // Function for hiding the functionallity for creating a group if the
+  // user doesn't have access to it
   normieUser() {
     const target = document.getElementById('btnGroup');
     target.style.display = 'none';
   }
 
+  // Function for getting a users data to develop the dashboard for
+  // them and displaying the groups and channels available
   getUserData() {
-    this.GetUser(this.username).subscribe(
+    this.http.post<User>('/api/UserData', {username: this.username}).subscribe(
       data => {
         if (data.success) {
           this.userData = JSON.parse(data.UserData);

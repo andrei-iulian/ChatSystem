@@ -31,10 +31,7 @@ export class GroupComponent implements OnInit {
     this.username = localStorage.getItem('username');
   }
 
-  GetGroup(group: string) {
-    return this.http.post<GroupData>('/api/GroupData', {groupName: group});
-  }
-
+  // Function for displaying the form for creating a new channel
   open(content) {
     this.modalService.open(content, {ariaLabelledBy: 'CreateChannelTitle'}).result.then((result) => {
       if (result === 'Create') {
@@ -45,6 +42,8 @@ export class GroupComponent implements OnInit {
     }, (reason) => {  });
   }
 
+  // Function for sending a request to the user to create a new channel
+  // Adds the user that created the channel as its user
   CreateChannel(channelName: string) {
     this.http.post<APIResponse>('/api/CreateChannel', {groupName: this.groupName, channelName: channelName, userName: this.username})
     .subscribe( data => {
@@ -59,6 +58,8 @@ export class GroupComponent implements OnInit {
     });
   }
 
+  // Function for deleting a particular group, hides the component if it has
+  // been deleted
   DeleteGroup() {
     this.http.post<APIResponse>('/api/DeleteGroup', {groupName: this.groupName}).subscribe(
       data => {
@@ -72,6 +73,8 @@ export class GroupComponent implements OnInit {
     );
   }
 
+  // Function for joining a particular channel, stores the user data
+  // and data for what channel is being navigated too
   JoinChannel(channel: string) {
     if (typeof(Storage) !== 'undefined') {
       localStorage.setItem('type', this.userType);
@@ -81,17 +84,20 @@ export class GroupComponent implements OnInit {
     }
   }
 
+  // Function that gets the group data from the server and displaying
+  // it to the user.
   getGroupData() {
-    this.GetGroup(this.groupName).subscribe(
+    this.http.post<GroupData>('/api/GroupData', {groupName: this.groupName}).subscribe(
       data => {
         if (data.success) {
           this.groupData = JSON.parse(data.GroupData);
+        } else if (!data.success && data.GroupData === 'NotFound') {
+          alert('Group by that name not Found');
         }
       },
       error => {
         alert('failed');
       });
-
   }
 
 }
