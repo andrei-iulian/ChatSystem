@@ -9,7 +9,7 @@ export interface User {
   success: boolean;
 }
 
-export interface AddGroupResponse {
+export interface APIResponse {
   result: string;
 }
 
@@ -25,9 +25,13 @@ export interface UserDataObject {
   styleUrls: ['./dash.component.css']
 })
 export class DashComponent implements OnInit {
+  modalType: string;
   username: string;
   nGroupName: string;
   userData: UserDataObject;
+  nUserType = 'Normie';
+  nUser: string;
+  update = false;
 
   constructor(private router: Router, private modalService: NgbModal, private http: HttpClient) { }
 
@@ -43,10 +47,14 @@ export class DashComponent implements OnInit {
   }
 
   open(content) {
-    this.modalService.open(content, {ariaLabelledBy: 'CreateGroupTitle'}).result.then((result) => {
+    this.modalService.open(content, {ariaLabelledBy: 'CreateTitle'}).result.then((result) => {
       if (result === 'Create') {
-        if (this.nGroupName !== '') {
-          this.CreateGroup(this.nGroupName);
+        if (this.modalType === 'Group') {
+          if (this.nGroupName !== '') {
+            this.CreateGroup(this.nGroupName);
+          }
+        } else if (this.modalType === 'User') {
+          this.UpdateUser();
         }
       }
     }, (reason) => {  });
@@ -57,8 +65,25 @@ export class DashComponent implements OnInit {
     this.router.navigateByUrl('/login');
   }
 
+  UpdateUser() {
+    this.http.post<APIResponse>('/api/UpdateUser', {groupName: this.nGroupName,
+      userName: this.nUser, userType: this.nUserType, update: this.update}).subscribe(
+      data => {
+        if (data.result === 'UserExists') {
+          alert('Users by that Name Exists');
+        } else if ( data.result === 'ReadFail') {
+          alert('Server failed to load Database');
+        } else if (data.result === 'GroupFailed') {
+          alert('That Group doesn\'t Exist');
+        } else if (data.result === 'Success') {
+          console.log('Created User');
+        }
+      }
+    );
+  }
+
   CreateGroup(GroupName: string) {
-    this.http.post<AddGroupResponse>('/api/AddGroup', {groupName: GroupName, User: this.username}).subscribe(
+    this.http.post<APIResponse>('/api/AddGroup', {groupName: GroupName, User: this.username}).subscribe(
       data => {
         if (data.result === 'Exists') {
           alert('Group by that Name Exists');

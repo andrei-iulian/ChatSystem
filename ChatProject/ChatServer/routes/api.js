@@ -105,6 +105,74 @@ module.exports = function(app, fs) {
         });
     });
 
+    app.post('/api/UpdateUser', (req, res) => {
+        var group = req.body.groupName;
+        var type = req.body.userType;
+        var user = req.body.userName;
+        var update = req.body.update;
+        var loc;
+        var exists = false;
+        var groupExists = false;
+
+        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
+            if (err) {
+                console.log(err);
+                res.send({result: 'ReadFail'});
+            } else {
+                Database = JSON.parse(data);
+                Users = Database[0].Users;
+                Groups = Database[1].Groups;
+
+                for (let i = 0; i < Users.length; i++) {
+                    if (Users[i].Username === user) {
+                        exists = true;
+                        loc = i;
+                        break;
+                    }
+                }
+                console.log(group);
+                for (let i = 0; i < Groups.length; i++) {
+                    if (Groups[i].Group === group) {
+                        Groups[i].Users.push(user);
+                        groupExists = true;
+                        break;
+                    }
+                }
+
+                if (exists && groupExists && update) { 
+                    console.log(Users[loc].Groups);
+                    Users[loc].UserType = type;
+                    for (let i = 0; i < Users[loc].Groups.length; i++) {
+                        console.log(Users[loc].Groups[i] === group);
+                        if (Users[loc].Groups[i] === group) {
+                            break;
+                        }
+                    }
+                    Users[loc].Groups.push(group);
+                } else if (exists) {
+                    res.send({result: 'UserExists'});
+                    return;
+                } else  if (groupExists){
+                    Users.push({"Username": user, "Email": user +'@mail.com', "UserType": type, "Groups": ["Global", group]});
+                } else {
+                    res.send({result: 'GroupFailed'});
+                    return;
+                }
+                Database[0].Users = Users;
+                Database[1].Groups = Groups;
+
+                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
+                    if (err) {
+                        console.log(err);
+                        res.send({result: 'ReadFail'});
+                    }
+                    res.send({result: 'Success'});
+                    console.log("Added User: " + group + "-" + user);
+                });
+            }
+        })
+    });
+
     app.post('/api/AddUserChannel', (req, res) => {
         var channel = req.body.channel;
         var group = req.body.group;
@@ -146,7 +214,7 @@ module.exports = function(app, fs) {
                 }
 
                 if (!found) {
-                    Users.push( {"Username": user, "Email": user +'@mail.com', "UserType": "Normie", "Groups": ["Global", group]});
+                    Users.push({"Username": user, "Email": user +'@mail.com', "UserType": "Normie", "Groups": ["Global", group]});
                     for (let j = 0; j < Groups.length; j++) {
                         if (Groups[j].Group === group) {
                             Groups[j].Users.push(user);
