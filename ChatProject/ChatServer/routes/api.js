@@ -105,6 +105,87 @@ module.exports = function(app, fs) {
         });
     });
 
+    app.post('/api/AddUserChannel', (req, res) => {
+        var channel = req.body.channel;
+        var group = req.body.group;
+        var channelName = group + ':' + channel;
+        var user = req.body.user;
+        var found = false;
+        var groupFound = false;
+
+        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
+            if (err) {
+                console.log(err);
+                res.send({success: false});
+            } else {
+                Database = JSON.parse(data);
+                Users = Database[0].Users;
+                Groups = Database[1].Groups;
+                Channels = Database[2].Channels;
+
+                for (let i = 0; i < Users.length; i++) {
+                    if (Users[i].Username === user) {
+                        found = true;
+                        for (let j = 0; j < Users[i].Groups.length; j++) {
+                            if(Users[j].Groups === group) {
+                                groupFound = true;
+                                break;
+                            }
+                        }
+                        if(!groupFound) {
+                            Users[i].Groups.push(group);
+                            for (let j = 0; j < Groups.length; j++) {
+                                if (Groups[j].Group === group) {
+                                    Groups[j].Users.push(user);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    Users.push( {"Username": user, "Email": user +'@mail.com', "UserType": "Normie", "Groups": ["Global", group]});
+                    for (let j = 0; j < Groups.length; j++) {
+                        if (Groups[j].Group === group) {
+                            Groups[j].Users.push(user);
+                            break;
+                        }
+                    }
+                }             
+
+                foundInChannel = false;
+                for (let i = 0; i < Channels.length; i++) {
+                    if (Channels[i].Channel === channelName) {
+                        for (let j = 0; j < Channels[i].Users.length; j++) {
+                            if(Channels[i].Users[j] === user) {
+                                foundInChannel = true;
+                                break;
+                            }
+                        }       
+                        if (!foundInChannel) {
+                            Channels[i].Users.push(user);
+                        }
+                        break;
+                    }
+                }
+                Database[0].Users = Users;
+                Database[1].Groups = Groups;
+                Database[2].Channels = Channels;
+
+                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
+                    if (err) {
+                        console.log(err);
+                        res.send({success: false});
+                    }
+                    res.send({success: true});
+                    console.log("Added User: " + channelName + '-' + user);
+                });
+            }
+        })
+    });
+
     app.post('/api/AddGroup', (req, res) => {
         var groupName = req.body.groupName;
         var user = req.body.User;
@@ -143,6 +224,45 @@ module.exports = function(app, fs) {
                 });
             }
         })
+    });
+
+    app.post('/api/DelUserChannel', (req, res) => {
+        var channel = req.body.channel;
+        var group = req.body.group;
+        var channelName = group + ':' + channel;
+        var user = req.body.user;
+
+        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
+            if (err) {
+                console.log(err);
+                res.send({result: 'Failed'});
+            } else {
+                Database = JSON.parse(data);
+                Channels = Database[2].Channels;
+                var found = false;
+                for (let i = 0; i < Channels.length; i++) {
+                    if (Channels[i].Channel === channelName) {
+                        Channels[i].Users = Channels[i].Users.filter(
+                            element => element != user)
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    res.send({result: 'NotExist'});
+                }
+                Database[2].Channels = Channels;
+
+                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
+                    if (err) {
+                        console.log(err);
+                        res.send({result: 'Failed'});
+                    }
+                    res.send({result: 'Success'});
+                    console.log("Deleted: " + channelName + '-' + user);
+                });
+            }
+        });
+
     });
 
     app.post('/api/DeleteChannel', (req, res) => {

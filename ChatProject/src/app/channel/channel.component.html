@@ -14,6 +14,32 @@
         </div>
     </nav>   
 
+    <ng-template #content let-modal>
+        <div class="modal-header">
+          <div class="modal-title" id="ChannelTitle">
+            <h4 *ngIf = "type === 'Add'" >Add User</h4>
+            <h4 *ngIf = "type === 'Del'" >Del User</h4>
+          </div>
+          <button type="button" class="close" aria-label="Close" (click)="modal.close('Close')">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="NameofChannel">User Name:</label>
+              <div class="input-group">
+                <input class="form-control" type="text" [(ngModel)]='nUserName' name="nChannelName">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="modal.close('Create')">Submit</button>
+        </div>
+      </ng-template>
+
+
     <div class="container">
       <div class= "row justify-content-md-center">
         <ul>
@@ -43,7 +69,10 @@
     <div class = "mx-auto" style="width: 700px; height: 100px">
       <button *ngIf="userType !== 'Normie'" class="btn bg-danger left-right" (click) = "DeleteChannel()">Delete Channel</button>
       
-      <button *ngIf="userType !== 'Normie'" class="btn bg-danger float-right" (click) = "DeleteChannel()">Remove User</button>
+      <div>
+          <button *ngIf="userType !== 'Normie'" class="btn bg-danger float-right" style="margin: 10px" (click) = "type = 'Del'; open(content, 'Del')">Remove User</button>
+          <button *ngIf="userType !== 'Normie'" class="btn bg-success float-right" style="margin: 10px" (click) = "type = 'Add'; open(content, 'Add')">Add User</button>
+      </div>
     </div>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
   </body>
