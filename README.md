@@ -30,7 +30,7 @@ to break (luckily it did not occur during development).
 ### Installation:
 To install the project from git:
 * clone the repository from 'https://github.com/andrei-iulian/ChatSystem.git'
-*cd into - ..\ChatSystem\ChatProject
+* cd into - ..\ChatSystem\ChatProject
 * call module installation for Angular project - npm install
 * rebuild the project distribution - ng build
 * cd into - ..\ChatSystem\ChatProject\ChatServer
