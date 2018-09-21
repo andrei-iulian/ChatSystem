@@ -1,0 +1,8 @@
+Database Setup:
+> use chat
+> db.createCollection('Users')
+> db.createCollection('Groups')
+> db.createCollection('Channels')
+> db.Users.insertMany([{"Username": "Andrei", "Password": "and", "Email": "Andrei@mail.com", "UserType": "Super", "Groups": ["Global", "KoolKids"]}, {"Username": "Jeff", "Password": "jef", "Email": "Jeff@mail.com", "UserType": "Group", "Groups": ["Global", "KoolKids", "Bros"]}, {"Username": "Greg", "Password": "gre", "Email": "Greg@mail.com", "UserType": "Normie", "Groups": ["Global", "Bros"]}])
+> db.Groups.insertMany([{"Group": "Global", "Users": ["Andrei", "Jeff", "Greg"], "Channels": ["Four", "One"]},{"Group": "KoolKids", "Users": ["Andrei", "Jeff"], "Channels": ["Two"]}, {"Group": "Bros", "Users": ["Jeff", "Greg"], "Channels": ["Three"]}])
+> db.Channels.insertMany([{"Channel": "Global:Four", "Users": ["Andrei", "Greg", "Jeff"], "Chat": []}, {"Channel": "Global:One", "Users": ["Andrei", "Jeff"], "Chat": []}, {"Channel": "KoolKids:Two", "Users": ["Andrei", "Jeff"], "Chat": []}, {"Channel": "Bros:Three", "Users": ["Jeff", "Greg"], "Chat": []}]

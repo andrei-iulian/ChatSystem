@@ -1,1 +1,21 @@
-[{"Users":[{"Username":"Andrei","Email":"Andrei@mail.com","UserType":"Super","Groups":["Global","KoolKids"]},{"Username":"Jeff","Email":"Jeff@mail.com","UserType":"Group","Groups":["Global","KoolKids","Bros"]},{"Username":"Greg","Email":"Greg@mail.com","UserType":"Normie","Groups":["Global","Bros"]}]},{"Groups":[{"Group":"Global","Users":["Andrei","Jeff","Greg"],"Channels":["Four","One"]},{"Group":"KoolKids","Users":["Andrei","Jeff"],"Channels":["Two"]},{"Group":"Bros","Users":["Jeff","Greg"],"Channels":["Three"]}]},{"Channels":[{"Channel":"Global:Four","Users":["Andrei","Greg","Jeff"],"Data":[]},{"Channel":"Global:One","Users":["Andrei","Jeff"],"Data":[]},{"Channel":"KoolKids:Two","Users":["Andrei","Jeff"],"Data":[]},{"Channel":"Bros:Three","Users":["Jeff","Greg"],"Data":[]}]}]
+[   {"Users":
+    [
+        {"Username": "Andrei", "Password": "and", "Email": "Andrei@mail.com", "UserType": "Super", "Groups": ["Global", "KoolKids"]},
+        {"Username": "Jeff", "Password": "jef", "Email": "Jeff@mail.com", "UserType": "Group", "Groups": ["Global", "KoolKids", "Bros"]},
+        {"Username": "Greg", "Password": "gre", "Email": "Greg@mail.com", "UserType": "Normie", "Groups": ["Global", "Bros"]}
+    ]
+}, {"Groups":
+    [
+        {"Group": "Global", "Users": ["Andrei", "Jeff", "Greg"], "Channels": ["Four", "One"]},
+        {"Group": "KoolKids", "Users": ["Andrei", "Jeff"], "Channels": ["Two"]},
+        {"Group": "Bros", "Users": ["Jeff", "Greg"], "Channels": ["Three"]}
+    ]
+}, {"Channels":
+    [
+        {"Channel": "Global:Four", "Users": ["Andrei", "Greg", "Jeff"], "Chat": []},
+        {"Channel": "Global:One", "Users": ["Andrei", "Jeff"], "Chat": []},
+        {"Channel": "KoolKids:Two", "Users": ["Andrei", "Jeff"], "Chat": []},
+        {"Channel": "Bros:Three", "Users": ["Jeff", "Greg"], "Chat": []}
+    ]
+}
+]

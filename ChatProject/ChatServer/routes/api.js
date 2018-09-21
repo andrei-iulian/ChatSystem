@@ -221,7 +221,11 @@ module.exports = function(app, fs) {
                 }
 
                 if (!found) {
-                    Users.push({"Username": user, "Email": user +'@mail.com', "UserType": "Normie", "Groups": ["Global", group]});
+                    if (group === 'Global') {
+                        Users.push({"Username": user, "Email": user +'@mail.com', "UserType": "Normie", "Groups": ["Global", group]});
+                    } else {
+                        User.push({"Username": user, "Email": user +'@mail.com', "UserType": "Normie", "Groups": [group]});
+                    }
                     for (let j = 0; j < Groups.length; j++) {
                         if (Groups[j].Group === group) {
                             Groups[j].Users.push(user);
