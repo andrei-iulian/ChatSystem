@@ -1,70 +1,73 @@
-module.exports = function(app, fs) {
+module.exports = function(app, fs, db) {
+
+    // Function for authenticating the User
+    app.post('/api/UserAuth', (req, res) => {
+        user = req.body.user;
+        pass = req.body.pass;
+
+        db.collection('Users').find({'Username': user, 'Password': pass}).toArray(
+            (err, resp) => {
+                if (err) {
+                    res.send({'result': 'Failed'});
+                    return console.log(err);
+                }
+                if (!resp[0]) {
+                    res.send({'result': 'Failed'});
+                } else {
+                    res.send({'result': 'Success'});
+                }
+            })
+    });
 
     // Function for returning all the relevant User data
     app.post('/api/UserData', (req, res) => {
         var uname = req.body.username;
-        var Users;
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
-            if (err) {
-                console.log(err);
-                res.send({'UserData': '', 'success': false});
-            } else {
-                Database = JSON.parse(data);
-                Users = Database[0].Users;
-                for (let i = 0; i < Users.length; i++) {
-                    if (Users[i].Username === uname) {
-                        res.send({'UserData': JSON.stringify(Users[i]), 'success': true});
-                        return;
-                    }
-                }
-                res.send({'UserData': 'NotFound', 'success': false});
-            }
-        })
+
+        db.collection('Users').find({'Username': uname}).toArray(
+            (err, resp) => {
+                if (err) {
+                    res.send({'UserData': '','success': false});
+                    return console.log(err);
+                } 
+                res.send({'UserData': JSON.stringify(resp[0]), 'success': true});
+            });
     });
 
     // Function for returning the group data for a particular group
     app.post('/api/GroupData', (req, res) => {
         var groupName = req.body.groupName;
-        var Groups;
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
-            if (err) {
-                console.log(err);
-                res.send({'GroupData': '', 'success': false});
-
-            } else {
-                Database = JSON.parse(data);
-                Groups = Database[1].Groups;
-                for (let i = 0; i < Groups.length; i++) {
-                    if (Groups[i].Group === groupName) {
-                        res.send({'GroupData': JSON.stringify(Groups[i]), 'success': true});
-                        return;
-                    }
+        
+        db.collection('Groups').find({'Group': groupName}).toArray(
+            (err, resp) => {
+                if (err) {
+                    res.send({'GroupData': '','success': false});
+                    return console.log(err);
+                } else if (resp) {
+                    res.send({'GroupData': JSON.stringify(resp[0]), 'success': true});
+                } else {
+                    res.send({'GroupData': 'NotFound', 'success': false});
                 }
-                res.send({'GroupData': 'NotFound', 'success': false});
-            }
-        })
+            });
     });
 
     // Function for returning the data for a particular channel
     app.post('/api/ChannelData', (req, res) => {
         var groupName = req.body.group;
         var channel = req.body.channel;
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
-            if(err) {
-                console.log(err);
-                res.send({channelData: '', success: false});
-            } else {
-                Database = JSON.parse(data);
-                Channels = Database[2].Channels;
-                channelName = groupName + ":" + channel;
-                for (let i = 0; i < Channels.length; i++) {
-                    if(!Channels[i].Channel.localeCompare(channelName)) {
-                        res.send({channelData: JSON.stringify(Channels[i]), success: true});
-                        return;
-                    }
+        var channelName = groupName + ":" + channel;
+
+         
+        db.collection('Channels').find({'Channel': channelName}).toArray(
+            (err, resp) => {
+                if (err) {
+                    res.send({channelData: '', success: false});
+                    return console.log(err);
+                } else if (resp) {
+                    res.send({channelData: JSON.stringify(resp[0]), success: true});
+                } else {
+                    res.send({channelData: '', success: false});
                 }
-            }
-        })
+            });
     });
 
     // Function for creating a new channel
@@ -73,41 +76,32 @@ module.exports = function(app, fs) {
         var channel = req.body.channelName;
         var user = req.body.userName;
         var channelName = groupName + ':' + channel;
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
-            if (err) {
-                console.log(err);
-                res.send({result: 'Fail'});
-            } else {
-                Database = JSON.parse(data);
-                Groups = Database[1].Groups;
-                Channels = Database[2].Channels;
 
-                for (let i = 0; i < Channels.length; i++) {
-                    if (Channels[i].Channel === channelName) {
-                        res.send({result: 'Exists'});
-                        return;
-                    }
+        db.collection('Channels').find({'Channel': channelName}).toArray( 
+            (err, resp) => {
+                if (err) {
+                    res.send({result: 'Fail'});
+                    return;
+                } else if (!resp) {
+                    console.log(resp);
+                    res.send({result: 'Exists'});
+                    return;
+                } else {
+                    db.collection('Channels').insertOne({Channel: channelName, Users: [user], "Data": []},
+                    (er, rs) => {
+                        if (er) {
+                            res.send({result: 'Fail'});
+                            return;
+                        } else if (resp) {
+                            db.collection('Groups').updateOne({Group: groupName}, {$push: {Channels: channel}});
+                            res.send({result: 'Success'});
+                        } else {
+                            res.send({result: 'Fail'});
+                            return;
+                        }
+                    });
                 }
-                Channels.push({"Channel": channelName, "Users": [user], "Data": []});
-                Database[2].Channels = Channels;
-
-                for (let i = 0; Groups.length; i++) {
-                    if (Groups[i].Group === groupName) {
-                        Groups[i].Channels.push(channel);
-                        Database[1].Groups = Groups;
-                        break;
-                    }
-                }
-                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
-                    if (err) {
-                        console.log(err);
-                        res.send({result: 'Fail'});
-                    }
-                    res.send({result: "Success"});
-                    console.log("Created Channel: " + channelName);
-                });
-            }
-        });
+            });
     });
 
     // Function that hands both user updating and user creation depending on the value of
@@ -352,41 +346,23 @@ module.exports = function(app, fs) {
         var channel = req.body.channel;
         var channelName = group + ':' + channel;
 
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
-            if (err) {
-                console.log(err);
-                res.send({success: false});
-            } else {
-                Database = JSON.parse(data);
-                Groups = Database[1].Groups;
-                Channels = Database[2].Channels;
-
-                for (let i = 0; i < Groups.length; i++) {
-                    if (Groups[i].Group === group) {
-                        Groups[i].Channels = Groups[i].Channels.filter(
-                            element => element != channel);
-                        Database[1].Groups = Groups;
-                        break;                        
-                    }
+        db.collection('Channels').deleteOne({'Channel': channelName},
+            (err, resp) => {
+                if (err) {
+                    res.send({success: false});
+                    return console.log(err);
+                } else {
+                    db.collection('Groups').update({Group: group},
+                    {"$pull" : {'Channels' : channel}}).then(function(result) {
+                        res.send({success: true});
+                    }, function(error) {
+                        if (error) {
+                            res.send({success: false});
+                        }
+                    });
                 }
-
-                for (let i = 0; i < Channels.length; i++) {
-                    if (Channels[i].Channel === channelName) {
-                        Channels.splice(i, i+1);
-                        Database[2].Channels = Channels;
-                        break;
-                    }
-                }
-                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
-                    if (err) {
-                        console.log(err);
-                        res.send({success: false});
-                    }
-                    res.send({success: true});
-                    console.log("Deleted Channel: " + channelName);
-                })
             }
-        });
+        );
     });
 
     // Function for deleting a group

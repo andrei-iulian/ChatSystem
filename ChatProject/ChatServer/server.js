@@ -20,10 +20,10 @@ var port = 3000;
 MongoClient.connect(url, {useNewUrlParser: true}, function(err, client) {
     if (err) {return console.log(err)}
 
-    const dbName = 'mydb';
+    const dbName = 'chat';
     const db = client.db(dbName);
 
-    require('./routes/api.js')(app, fs);
+    require('./routes/api.js')(app, fs, db);
 
     var server = http.listen(port, host, function() {
         console.log("Server is listening on " + host + ':' + port);

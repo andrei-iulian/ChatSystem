@@ -7,12 +7,18 @@
 
   </head>
   <body> 
-    <form class="form-inline" (submit) = "loginUser($event)">
+    <form class="form" (submit) = "loginUser($event)">
       <div class="form-group mb-2">
           <label>Username</label>
       </div>
       <div class="form-group mx-sm-3">
         <input class="form-control" type="text" name="username" [(ngModel)]='username'>
+      </div>
+      <div class="form-group mb-2">
+          <label>Password</label>
+      </div>
+      <div class="form-group mx-sm-3">
+        <input class="form-control" type="password" name="password" [(ngModel)]='password'>
       </div>
       <button class="btn btn-primary" type="submit">Login</button>
     </form>
