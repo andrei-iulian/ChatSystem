@@ -15,7 +15,7 @@ export interface APIResponse {
 export interface UserDataObject {
   Username: string;
   UserType: string;
-  Groups: object;
+  Groups: Array<string>;
 }
 
 @Component({
@@ -29,6 +29,8 @@ export class DashComponent implements OnInit {
   nGroupName: string;
   userData: UserDataObject;
   nUserType = 'Normie';
+  nPassword: string;
+  nGroups = {};
   nUser: string;
   update = false;
 
@@ -67,20 +69,12 @@ export class DashComponent implements OnInit {
   // Function for updating a particular Users userType and adding a
   // user to a group
   UpdateUser() {
-    this.http.post<APIResponse>('/api/UpdateUser', {groupName: this.nGroupName,
-      userName: this.nUser, userType: this.nUserType, update: this.update}).subscribe(
-      data => {
-        if (data.result === 'UserExists') {
-          alert('Users by that Name Exists');
-        } else if ( data.result === 'ReadFail') {
-          alert('Server failed to load Database');
-        } else if (data.result === 'GroupFailed') {
-          alert('That Group doesn\'t Exist');
-        } else if (data.result === 'Success') {
-          console.log('Created User');
-        }
-      }
-    );
+    localStorage.setItem('updateUser', this.nUser);
+    this.router.navigateByUrl('/update-user');
+  }
+
+  CreateUser() {
+    this.router.navigateByUrl('create-user');
   }
 
   // Function for creating a new group, the function puts the user
@@ -114,6 +108,9 @@ export class DashComponent implements OnInit {
       data => {
         if (data.success) {
           this.userData = JSON.parse(data.UserData);
+          for (const group of this.userData.Groups) {
+            this.nGroups[group] = false;
+          }
           if (this.userData.UserType === 'Normie') {
             this.normieUser();
           }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav *ngIf = "nUser" class="navbar-default" style="margin-top: 20px">
+      <div class="navbar-header mx-auto" style="width: 600px">
+          <div class="navbar-brand">
+            <h2>Update User</h2>
+          </div>
+      </div>
+    </nav>
+    <div *ngIf = "nPassword" class='mx-auto col-8'>
+      <div class="form-group row">
+        <label class="col-2 col-form-label">Username:</label>
+        <div class="col-8">
+          <input class="form-control" type="text" [(ngModel)]='nUser' name='nUser'>
+        </div>
+      </div>  
+      <div class="form-group row">
+        <label for="example-text-input" class="col-2 col-form-label">Password:</label>
+        <div class="col-8">
+          <input class="form-control" type="text" [(ngModel)]='nPassword' name='nPassword'>
+        </div>
+      </div>  
+      <div class="form-group row">
+        <label for="example-text-input" class="col-2 col-form-label">Email:</label>
+        <div class="col-8">
+          <input class="form-control" type="text" [(ngModel)]='nEmail' name='nEmail'>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="example-text-input" class="col-2 col-form-label">User Type:</label>
+        <div class="btn-group btn-group-toggle col-8" ngbRadioGroup name="radioBasic" [(ngModel)]="nUserType">
+            <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" value="Normie"> Normie
+            </label>
+            <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" value="Group"> Group
+            </label>
+            <label ngbButtonLabel class="btn-primary">
+              <input ngbButton type="radio" value="Super"> Super
+            </label>
+        </div>
+      </div>
+      <div *ngIf="nGroups" class="form-group">
+        <label for="exampleTextarea">Groups:</label>
+        <div class="btn-group btn-group-toggle col-8">
+            <div *ngFor="let group of groups">
+              <label class="btn-primary" ngbButtonLabel>
+                <input type="checkbox" ngbButton [(ngModel)]="nGroups[group]" name="nGroups.group"> {{group}}
+              </label>
+            </div>
+          </div>
+      </div>
+      <button class="btn btn-primary float-right" (click) = "Submit()">Submit</button>
+    </div>
+  </body>
+</html>

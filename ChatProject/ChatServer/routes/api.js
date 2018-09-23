@@ -33,6 +33,18 @@ module.exports = function(app, fs, db) {
             });
     });
 
+    app.get('/api/Groups', (req, res) => {
+        db.collection('Groups').find({}).toArray(
+            (err, resp) => {
+                if (err) {
+                    res.send({'Groups': '', 'success': false});
+                } else {
+                    res.send({'Groups': JSON.stringify(resp), 'success': true});
+                }
+            }
+        )
+    });
+
     // Function for returning the group data for a particular group
     app.post('/api/GroupData', (req, res) => {
         var groupName = req.body.groupName;
@@ -107,69 +119,38 @@ module.exports = function(app, fs, db) {
     // Function that hands both user updating and user creation depending on the value of
     // the update boolean parameter
     app.post('/api/UpdateUser', (req, res) => {
-        var group = req.body.groupName;
+        var groups = JSON.parse(req.body.groups);
         var type = req.body.userType;
         var user = req.body.userName;
-        var update = req.body.update;
-        var loc;
-        var exists = false;
-        var groupExists = false;
+        var email = req.body.email;
+        var password = req.body.password;
+        var groupArray = [];
 
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
-            if (err) {
-                console.log(err);
-                res.send({result: 'ReadFail'});
-            } else {
-                Database = JSON.parse(data);
-                Users = Database[0].Users;
-                Groups = Database[1].Groups;
-
-                for (let i = 0; i < Users.length; i++) {
-                    if (Users[i].Username === user) {
-                        exists = true;
-                        loc = i;
-                        break;
+        names = Object.keys(groups);
+        
+        for (var i = 0; i < names.length; i++) {
+            if (groups[names[i]]) {
+                groupArray.push(names[i]);
+            }
+        }
+        
+        db.collection('Users').updateOne({Username: user}, 
+                {$set: {Password: password, Email: email, UserType: type,  Groups: groupArray}}, (error, result) => {
+                    if (error) {
+                        res.send({result: 'ReadFail'});
+                        return console.log(error);
                     }
-                }
-                console.log(group);
-                for (let i = 0; i < Groups.length; i++) {
-                    if (Groups[i].Group === group) {
-                        Groups[i].Users.push(user);
-                        groupExists = true;
-                        break;
-                    }
-                }
 
-                if (exists && groupExists && update) { 
-                    Users[loc].UserType = type;
-                    for (let i = 0; i < Users[loc].Groups.length; i++) {
-                        if (Users[loc].Groups[i] === group) {
-                            break;
+                    for (var i = 0; i < names.length; i++) {
+                        if (groups[names[i]]) {
+                            db.collection("Groups").updateOne({Group: names[i]}, {$addToSet: {'Users': user}});
+                        } else {
+                            db.collection("Groups").updateOne({Group: names[i]}, {$pull: {'Users': user}});
+                            db.collection("Channels").updateMany({Channel: new RegExp(names[i]+":", 'i')}, {$pull: {'Users': user}});
                         }
                     }
-                    Users[loc].Groups.push(group);
-                } else if (exists) {
-                    res.send({result: 'UserExists'});
-                    return;
-                } else  if (groupExists){
-                    Users.push({"Username": user, "Email": user +'@mail.com', "UserType": type, "Groups": ["Global", group]});
-                } else {
-                    res.send({result: 'GroupFailed'});
-                    return;
-                }
-                Database[0].Users = Users;
-                Database[1].Groups = Groups;
-
-                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
-                    if (err) {
-                        console.log(err);
-                        res.send({result: 'ReadFail'});
-                    }
                     res.send({result: 'Success'});
-                    console.log("Created/Updated User: " + group + "-" + user);
-                });
-            }
-        })
+                });   
     });
 
     // Function for adding a user to a channel, function creates

@@ -10,11 +10,15 @@ import { HttpClientModule } from '@angular/common/http';
 import { DashComponent } from './dash/dash.component';
 import { GroupComponent } from './group/group.component';
 import { ChannelComponent } from './channel/channel.component';
+import { UpdateUserComponent } from './update-user/update-user.component';
+import { CreateUserComponent } from './create-user/create-user.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'dash', component: DashComponent},
-  {path: 'channel', component: ChannelComponent}
+  {path: 'channel', component: ChannelComponent},
+  {path: 'create-user', component: CreateUserComponent},
+  {path: 'update-user', component: UpdateUserComponent}
 ];
 
 @NgModule({
@@ -23,7 +27,9 @@ const routes: Routes = [
     LoginComponent,
     DashComponent,
     GroupComponent,
-    ChannelComponent
+    ChannelComponent,
+    UpdateUserComponent,
+    CreateUserComponent
   ],
   imports: [
     NgbModule,

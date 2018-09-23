@@ -22,15 +22,24 @@
           <div class="form-group">
             <div for="createModal">
                 <label *ngIf = "modalType === 'Group'" >Name of New Group:</label>
-                <label *ngIf = "modalType === 'User'">Name of New User:</label>
+                <label *ngIf = "modalType === 'User'">Name of User:</label>
             </div>
             <div class="input-group">
               <input *ngIf = "modalType === 'Group'" class="form-control" type="text" [(ngModel)]='nGroupName' name="nGroupName">
               <input *ngIf = "modalType === 'User'" class="form-control" type="text" [(ngModel)]='nUser' name='nUser'>
             </div>
-            <label *ngIf = "modalType === 'User'" >Group:</label>
-            <div class="input-group">
-                <input *ngIf = "modalType === 'User'" class="form-control" type="text" [(ngModel)]='nGroupName' name='nGroupName'>
+            <div for="createModal">
+            <label *ngIf = "modalType === 'User'">Password of User:</label>
+          </div>
+          <div class="input-group">
+            <input *ngIf = "modalType === 'User'" class="form-control" type="password" [(ngModel)]='nPassword' name='nPassword'>
+          </div>
+            <div *ngIf = "modalType === 'User'" class="btn-group btn-group-toggle">
+              <div *ngFor="let group of userData.Groups">
+                <label class="btn-primary" ngbButtonLabel>
+                  <input type="checkbox" ngbButton [(ngModel)]="nGroups[group]" name="nGroups.group"> {{group}}
+                </label>
+              </div>
             </div>
             <div *ngIf = "modalType ==='User'">
                 <div class="btn-group btn-group-toggle" ngbRadioGroup name="radioBasic" [(ngModel)]="nUserType">
@@ -58,7 +67,7 @@
       </div>
     </ng-template>
 
-    <nav class="navbar-default" style="margin-top: 20px">
+    <nav *ngIf = "username" class="navbar-default" style="margin-top: 20px">
       <div class="navbar-header mx-auto" style="width: 600px">
           <div class="navbar-brand">
             <h2>{{username}}'s Dashboard</h2>
@@ -67,9 +76,13 @@
       </div>
     </nav>
 
+    <div *ngIf = "userData.UserType === 'Super'" class = 'mx-auto' style="width: 600px">
+        <button type="button" class="btn btn-success navbar-btn float-right" (click)="CreateUser()">Create User</button>
+        <input class="form-control float-right" style="width: 110px; margin-right: 5%"  type="text" [(ngModel)]='nUser' placeholder="Username" name='nUser'>
+        <button type="button" class="btn btn-success navbar-btn float-right" (click)="UpdateUser()">Update User</button>
+    </div>
     
-    <div class="groups">
-      <button *ngIf = "userData.UserType === 'Super'" class= "btn btn-success" (click)="modalType = 'User'; open(content)">Create / Update User</button>
+    <div *ngIf = "userData" class="groups">
       <div *ngFor="let group of userData.Groups">
           <app-group userType = {{userData.UserType}} groupName = {{group}} ></app-group>
       </div>
