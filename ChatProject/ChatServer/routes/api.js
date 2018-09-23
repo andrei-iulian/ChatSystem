@@ -137,7 +137,7 @@ module.exports = function(app, fs, db) {
         db.collection('Users').updateOne({Username: user}, 
                 {$set: {Password: password, Email: email, UserType: type,  Groups: groupArray}}, (error, result) => {
                     if (error) {
-                        res.send({result: 'ReadFail'});
+                        res.send({result: 'NotFound'});
                         return console.log(error);
                     }
 
@@ -151,6 +151,46 @@ module.exports = function(app, fs, db) {
                     }
                     res.send({result: 'Success'});
                 });   
+    });
+
+    app.post('/api/CreateUser', (req, res) => {
+        var groups = JSON.parse(req.body.groups);
+        var type = req.body.userType;
+        var user = req.body.userName;
+        var email = req.body.email;
+        var password = req.body.password;
+        var groupArray = [];
+
+        names = Object.keys(groups);
+        
+        for (var i = 0; i < names.length; i++) {
+            if (groups[names[i]]) {
+                groupArray.push(names[i]);
+            }
+        }
+
+        if(!user) {
+            res.send({result: 'Fail'});
+            return;
+        }
+
+        db.collection('Users').find({'Username': user}).toArray((err, resp) =>{
+            if (resp.length > 0) {
+                res.send({result: 'Exists'});
+            } else {
+                db.collection('Users').insertOne({Username: user, Password: password, Email: email, UserType: type,  Groups: groupArray}, (e, r) => {
+                    if (e) {
+                        res.send({result: 'Fail'});
+                        return console.log(e);
+                    } else {
+                        for (var i = 0; i < groupArray.length; i++) {
+                            db.collection("Groups").updateOne({Group: groupArray[i]}, {$addToSet: {'Users': user}});
+                        }
+                    }
+                })
+                res.send({result: 'Success'});
+            }
+        });
     });
 
     // Function for adding a user to a channel, function creates
