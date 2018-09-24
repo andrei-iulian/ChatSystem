@@ -286,13 +286,23 @@ module.exports = function(app, fs, db) {
     app.post('/api/DeleteGroup', (req, res) => {
         var groupName = req.body.groupName;
         
-        db.collection('Groups').find({'Group': group}).toArray((err, resp) => {
+        db.collection('Groups').find({'Group': groupName}).toArray((err, resp) => {
             if (err) {
                 res.send({result: 'ReadFail'});
                 console.log(err);
+            } else if (resp[0]) {
+                var users = resp[0].Users;
+                for (let i = 0; i < users.length; i++) {
+                    db.collection('Users').updateOne({'Username': users[i]}, {$pull: {'Groups': groupName}});
+                }
+                db.collection('Groups').deleteOne({'Group': groupName});
+                res.send({result: 'Success'})
+            } else {
+                res.send({result: 'NotExist'});
             }
         });
 
+        /*
         fs.readFile('routes/Users.json', 'utf8', function(err, data) {
             if (err) {
                 console.log(err);
@@ -328,6 +338,6 @@ module.exports = function(app, fs, db) {
                     console.log("Deleted Group: " + groupName);
                 })
             }
-        });
+        });*/
     });
 }

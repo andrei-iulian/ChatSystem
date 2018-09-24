@@ -63,11 +63,13 @@ export class GroupComponent implements OnInit {
   DeleteGroup() {
     this.http.post<APIResponse>('/api/DeleteGroup', {groupName: this.groupName}).subscribe(
       data => {
-        if (data.result === 'Failed') {
-          alert('Failed to Delete Group');
-        } else {
+        if (data.result === 'Success') {
           console.log('Deleted Group');
           this.deleted = true;
+        } else if (data.result === 'NotExist') {
+          alert('Group Deleted by another User');
+        } else {
+          alert('Failed to Delete Group');
         }
       }
     );
