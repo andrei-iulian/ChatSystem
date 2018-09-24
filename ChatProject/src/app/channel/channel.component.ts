@@ -90,7 +90,7 @@ export class ChannelComponent implements OnInit {
         console.log('Deleted A User');
         this.ngOnInit();
       } else if (data.result === 'NotExist') {
-        alert('User Not in Group');
+        alert('User isn\'t in Channel');
       } else {
         alert('Failed to Delete User');
       }
@@ -100,11 +100,13 @@ export class ChannelComponent implements OnInit {
   // Function that handles the addition of a user by sending a post
   // request to the server
   AddUser() {
-    this.http.post<ChannelResponse>('/api/AddUserChannel', {channel: this.channel, group: this.group, user: this.nUserName})
+    this.http.post<APIResponse>('/api/AddUserChannel', {channel: this.channel, group: this.group, user: this.nUserName})
     .subscribe( data => {
-      if (data.success === true) {
+      if (data.result === 'Success') {
         console.log('Added a User Channel');
         this.ngOnInit();
+      } else if (data.result === 'NotExist') {
+        alert('User does not exist');
       } else {
         alert('Failed to Add a User to the Channel');
       }

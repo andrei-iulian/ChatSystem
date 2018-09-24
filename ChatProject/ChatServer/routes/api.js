@@ -200,125 +200,42 @@ module.exports = function(app, fs, db) {
         var group = req.body.group;
         var channelName = group + ':' + channel;
         var user = req.body.user;
-        var found = false;
-        var groupFound = false;
+        
+        if (!user) {
+            res.send({result: "NotExist"});
+            return;
+        }
 
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
+        db.collection("Users").find({'Username': user}).toArray((err, resp) => {
             if (err) {
-                console.log(err);
-                res.send({success: false});
+                res.send({result: 'Failed'});
+            } else if(resp[0]) {
+                db.collection("Users").updateOne({'Username': user}, {$addToSet: {'Groups': group}});
+                db.collection('Groups').updateOne({'Group': group}, {$addToSet: {'Users': user}});
+                db.collection('Channels').updateOne({'Channel': channelName}, {$addToSet: {'Users': user}});
+                res.send({result: 'Success'})
             } else {
-                Database = JSON.parse(data);
-                Users = Database[0].Users;
-                Groups = Database[1].Groups;
-                Channels = Database[2].Channels;
-
-                for (let i = 0; i < Users.length; i++) {
-                    if (Users[i].Username === user) {
-                        found = true;
-                        for (let j = 0; j < Users[i].Groups.length; j++) {
-                            if(Users[j].Groups === group) {
-                                groupFound = true;
-                                break;
-                            }
-                        }
-                        if(!groupFound) {
-                            Users[i].Groups.push(group);
-                            for (let j = 0; j < Groups.length; j++) {
-                                if (Groups[j].Group === group) {
-                                    Groups[j].Users.push(user);
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    if (group === 'Global') {
-                        Users.push({"Username": user, "Email": user +'@mail.com', "UserType": "Normie", "Groups": ["Global", group]});
-                    } else {
-                        User.push({"Username": user, "Email": user +'@mail.com', "UserType": "Normie", "Groups": [group]});
-                    }
-                    for (let j = 0; j < Groups.length; j++) {
-                        if (Groups[j].Group === group) {
-                            Groups[j].Users.push(user);
-                            break;
-                        }
-                    }
-                }             
-
-                foundInChannel = false;
-                for (let i = 0; i < Channels.length; i++) {
-                    if (Channels[i].Channel === channelName) {
-                        for (let j = 0; j < Channels[i].Users.length; j++) {
-                            if(Channels[i].Users[j] === user) {
-                                foundInChannel = true;
-                                break;
-                            }
-                        }       
-                        if (!foundInChannel) {
-                            Channels[i].Users.push(user);
-                        }
-                        break;
-                    }
-                }
-                Database[0].Users = Users;
-                Database[1].Groups = Groups;
-                Database[2].Channels = Channels;
-
-                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
-                    if (err) {
-                        console.log(err);
-                        res.send({success: false});
-                    }
-                    res.send({success: true});
-                    console.log("Added User: " + channelName + '-' + user);
-                });
+                res.send({result: 'NotExist'});
             }
-        })
+        });
     });
 
     // Function for adding a new group
     app.post('/api/AddGroup', (req, res) => {
         var groupName = req.body.groupName;
         var user = req.body.User;
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
-            if (err) {
-                console.log(err);
-                res.send({result: 'ReadFail'});
 
+        db.collection('Groups').find({'Group': groupName}).toArray((err, resp) => {
+            if (err) {
+                res.send({result: 'ReadFail'});
+            } else if (resp[0]) {
+                res.send({result: 'Exists'});
             } else {
-                Database = JSON.parse(data);
-                Users = Database[0].Users;
-                Groups = Database[1].Groups;
-                
-                for (let i = 0; i < Groups.length; i++) {
-                    if (Groups[i].Group === groupName) {
-                        res.send({result: 'Exists'});
-                        return;
-                    }
-                }
-                Groups.push({"Group": groupName, "Users": [user], "Channels": []});
-                Database[1].Groups = Groups;
-                for (let i = 0; i < Users.length; i++) {
-                    if (Users[i].Username === user) {
-                        Users[i].Groups.push(groupName);
-                        Database[0].Users = Users;
-                        break;
-                    }
-                }
-                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
-                    if (err) {
-                        console.log(err);
-                        res.send({result: 'ReadFail'});
-                    }
-                    res.send({result: "Success"});
-                    console.log("Created Group: " + groupName);
-                });
+                db.collection('Groups').insertOne({'Group': groupName, 'Users': [user], 'Channels': []});
+                db.collection('Users').updateOne({'Username': user}, {$addToSet: {'Groups': groupName}});
+                res.send({result: 'Success'});
             }
-        })
+        });
     });
 
     // Function for deleting a user from a particular channel
@@ -328,37 +245,16 @@ module.exports = function(app, fs, db) {
         var channelName = group + ':' + channel;
         var user = req.body.user;
 
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
+        db.collection('Channels').find({'Channel': channelName, 'Users': user}).toArray((err, resp) => {
             if (err) {
-                console.log(err);
                 res.send({result: 'Failed'});
+            } else if (resp[0]) {
+                db.collection('Channels').updateOne({'Channel': channelName}, {$pull: {'Users': user}});
+                res.send({result: 'Success'});
             } else {
-                Database = JSON.parse(data);
-                Channels = Database[2].Channels;
-                var found = false;
-                for (let i = 0; i < Channels.length; i++) {
-                    if (Channels[i].Channel === channelName) {
-                        Channels[i].Users = Channels[i].Users.filter(
-                            element => element != user)
-                        found = true;
-                    }
-                }
-                if (!found) {
-                    res.send({result: 'NotExist'});
-                }
-                Database[2].Channels = Channels;
-
-                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
-                    if (err) {
-                        console.log(err);
-                        res.send({result: 'Failed'});
-                    }
-                    res.send({result: 'Success'});
-                    console.log("Deleted: " + channelName + '-' + user);
-                });
+                res.send({result: 'NotExist'});
             }
         });
-
     });
 
     // Function that deletes a channel
@@ -390,6 +286,13 @@ module.exports = function(app, fs, db) {
     app.post('/api/DeleteGroup', (req, res) => {
         var groupName = req.body.groupName;
         
+        db.collection('Groups').find({'Group': group}).toArray((err, resp) => {
+            if (err) {
+                res.send({result: 'ReadFail'});
+                console.log(err);
+            }
+        });
+
         fs.readFile('routes/Users.json', 'utf8', function(err, data) {
             if (err) {
                 console.log(err);
