@@ -37,8 +37,8 @@ export class DashComponent implements OnInit {
   constructor(private router: Router, private modalService: NgbModal, private http: HttpClient) { }
 
   ngOnInit() {
-    if ('username' in localStorage) {
-      this.username = localStorage.getItem('username');
+    if ('username' in sessionStorage) {
+      this.username = sessionStorage.getItem('username');
     }
     this.getUserData();
   }
@@ -62,14 +62,14 @@ export class DashComponent implements OnInit {
   // Function for logging out of the dashboard and returing the client
   // to the login page
   Logout() {
-    localStorage.removeItem('username');
+    sessionStorage.removeItem('username');
     this.router.navigateByUrl('/login');
   }
 
   // Function for updating a particular Users userType and adding a
   // user to a group
   UpdateUser() {
-    localStorage.setItem('updateUser', this.nUser);
+    sessionStorage.setItem('updateUser', this.nUser);
     this.router.navigateByUrl('/update-user');
   }
 
@@ -117,6 +117,8 @@ export class DashComponent implements OnInit {
         } else if (data.UserData === 'NotFound') {
           alert('Not a valid Username');
           this.router.navigateByUrl('/login');
+        } else {
+          alert('Horrible Error, RUN!');
         }
       },
       error => {

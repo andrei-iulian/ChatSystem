@@ -5,6 +5,7 @@ const path = require('path');
 const http = require('http').Server(app);
 const fs = require('fs');
 const MongoClient = require('mongodb').MongoClient;
+const io = require('socket.io')(http);
 
 const url = 'mongodb://localhost:27017';
 
@@ -24,6 +25,7 @@ MongoClient.connect(url, {useNewUrlParser: true}, function(err, client) {
     const db = client.db(dbName);
 
     require('./routes/api.js')(app, fs, db);
+    require('./socket.js')(db, io);
 
     var server = http.listen(port, host, function() {
         console.log("Server is listening on " + host + ':' + port);

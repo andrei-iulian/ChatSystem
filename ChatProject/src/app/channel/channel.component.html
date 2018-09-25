@@ -42,8 +42,8 @@
 
     <div class="container">
       <div class= "row justify-content-md-center">
-        <ul>
-          <li class="list-group-item mx-auto" style="width: 600px; height: 400px"></li>
+        <ul class="card mx-auto" style="width: 600px; height: 400px; overflow: scroll;">
+          <div *ngFor="let message of messages">{{message.text}}</div>
         </ul>
         <ul>
           <li class ="list-group-item mx-auto" style="width: 100px">Users</li>
@@ -57,9 +57,9 @@
     <div class="container">
         <div class= "row justify-content-md-center">  
           <div class="input-group mx-auto mb-3" style="width: 600px">
-              <input type="text" class="form-control" placeholder="message" aria-describedby="button-addon2">
+              <input type="text" class="form-control" placeholder="message" [(ngModel)]="message" name='message'>
               <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button">Send</button>
+                <button class="btn btn-outline-secondary" type="button" (click) = 'SendMessage()'>Send</button>
               </div>
           </div>
           <div style="width: 100px"></div>

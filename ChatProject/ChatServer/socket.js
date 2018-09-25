@@ -6,8 +6,20 @@ module.exports = function(db, io) {
             console.log('Disconnect');
         });
 
-        socket.on("add-message", (message) => {
-            var group = message.split('//', 1);
+        socket.on("join", (userData) => {
+            socket.join(userData.channel);
+
+            var str = "User-" + userData.user + ' Joined the Channel';
+            socket.broadcast.to(userData.channel).emit('message', {type: 'message', text:str})
+        });
+
+        socket.on("leave", (userData) => {
+            var str = 'User-' + userData.user + ' Left the Channel';
+            socket.broadcast.to(userData.channel).emit('message', {type: 'message', text:str});
+        });
+
+        socket.on("add-message", (userData) => {
+            socket.broadcast.to(userData.channel).emit('message', {type: 'message', text:userData.message});
         });
     })
 }

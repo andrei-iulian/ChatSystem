@@ -28,7 +28,7 @@ export class GroupComponent implements OnInit {
 
   ngOnInit() {
     this.getGroupData();
-    this.username = localStorage.getItem('username');
+    this.username = sessionStorage.getItem('username');
   }
 
   // Function for displaying the form for creating a new channel
@@ -79,9 +79,9 @@ export class GroupComponent implements OnInit {
   // and data for what channel is being navigated too
   JoinChannel(channel: string) {
     if (typeof(Storage) !== 'undefined') {
-      localStorage.setItem('type', this.userType);
-      localStorage.setItem('channel', channel);
-      localStorage.setItem('group', this.groupName);
+      sessionStorage.setItem('type', this.userType);
+      sessionStorage.setItem('channel', channel);
+      sessionStorage.setItem('group', this.groupName);
       this.router.navigateByUrl('/channel');
     }
   }

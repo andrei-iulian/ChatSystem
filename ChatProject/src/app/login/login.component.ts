@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
       data => {
         if (data.result === 'Success') {
           if (typeof(Storage) !== 'undefined') {
-            localStorage.setItem('username', this.username);
+            sessionStorage.setItem('username', this.username);
             this.router.navigateByUrl('/dash');
           }
         } else {

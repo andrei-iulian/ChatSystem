@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { APIResponse } from '../dash/dash.component';
+import { SocketService } from '../socket.service';
 
 export interface ChannelData {
   channelData: string;
@@ -25,24 +26,40 @@ export interface ChannelObject {
   styleUrls: ['./channel.component.css']
 })
 
-export class ChannelComponent implements OnInit {
+export class ChannelComponent implements OnInit, OnDestroy {
   type: string;
   nUserName: string;
   userType: string;
   username: string;
   group: string;
   channel: string;
+  channelName: string;
+  messages = [];
+  message;
+  connection;
   channelData: ChannelObject;
 
-  constructor(private router: Router, private modalService: NgbModal,  private http: HttpClient) { }
+  constructor(private router: Router, private modalService: NgbModal,  private http: HttpClient, private sockServ: SocketService) { }
 
   ngOnInit() {
-    this.userType = localStorage.getItem('type');
-    this.username = localStorage.getItem('username');
-    this.group = localStorage.getItem('group');
-    this.channel = localStorage.getItem('channel');
-
+    this.userType = sessionStorage.getItem('type');
+    this.username = sessionStorage.getItem('username');
+    this.group = sessionStorage.getItem('group');
+    this.channel = sessionStorage.getItem('channel');
+    this.channelName = this.getChannelData + ':' + this.channel;
+    this.connection = this.sockServ.getMessages(this.username, this.channelName).subscribe( message => {
+      this.messages.push(message);
+      console.log(this.messages);
+      this.message = '';
+    });
     this.getChannelData();
+  }
+
+  ngOnDestroy() {
+    if (this.connection) {
+      this.sockServ.leaveChannel(this.username, this.channelName);
+      this.connection.unsubscribe();
+    }
   }
 
   // Fuction using the Router to navigate back to the dashboard
@@ -65,6 +82,13 @@ export class ChannelComponent implements OnInit {
         }
       }
     }, (reason) => {  });
+  }
+
+  SendMessage() {
+    const str = this.username + '- ' + this.message;
+    this.messages.push({type: 'message', text: str});
+    this.sockServ.sendMessage(this.channelName, str);
+    this.message = '';
   }
 
   // Function that handles the deletion of a channel by sending a post
@@ -127,5 +151,4 @@ export class ChannelComponent implements OnInit {
       }
     );
   }
-
 }
