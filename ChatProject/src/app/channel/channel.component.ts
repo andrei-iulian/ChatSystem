@@ -18,6 +18,7 @@ export interface ChannelObject {
   Channel: string;
   Users: object;
   Data: object;
+  Chat: Array<string>;
 }
 
 @Component({
@@ -46,7 +47,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
     this.username = sessionStorage.getItem('username');
     this.group = sessionStorage.getItem('group');
     this.channel = sessionStorage.getItem('channel');
-    this.channelName = this.getChannelData + ':' + this.channel;
+    this.channelName = this.group + ':' + this.channel;
     this.connection = this.sockServ.getMessages(this.username, this.channelName).subscribe( message => {
       this.messages.push(message);
       console.log(this.messages);
@@ -144,6 +145,8 @@ export class ChannelComponent implements OnInit, OnDestroy {
     .subscribe( data => {
         if (data.success === true) {
           this.channelData = JSON.parse(data.channelData);
+          this.messages.push.apply(this.messages, this.channelData.Chat);
+          console.log(this.messages);
         } else {
           alert('Failed to Retrieve Channel Data');
           this.Back();

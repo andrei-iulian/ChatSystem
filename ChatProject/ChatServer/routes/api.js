@@ -301,43 +301,5 @@ module.exports = function(app, fs, db) {
                 res.send({result: 'NotExist'});
             }
         });
-
-        /*
-        fs.readFile('routes/Users.json', 'utf8', function(err, data) {
-            if (err) {
-                console.log(err);
-                res.send({result: 'ReadFail'});
-
-            } else {
-                Database = JSON.parse(data);
-                Users = Database[0].Users;
-                Groups = Database[1].Groups;
-                for (let i = 0; i < Groups.length; i++) {
-                    if (Groups[i].Group === groupName) {
-                        Groups.splice(i, i+1);
-                        Database[1].Groups = Groups;
-                        break;
-                    }
-                }
-
-                for (let i = 0; i < Users.length; i++) {
-                    for(let j = 0; j < Users[i].Groups.length; j++) {
-                        if (Users[i].Groups[j] === groupName) {
-                            Users[i].Groups.splice(j, j+1);
-                            Database[0].Users = Users;
-                            break;
-                        }
-                    }
-                }
-                fs.writeFile("routes/Users.json", JSON.stringify(Database), 'utf8', function(err) {
-                    if (err) {
-                        console.log(err);
-                        res.send({result: 'ReadFail'});
-                    }
-                    res.send({result: "Success"});
-                    console.log("Deleted Group: " + groupName);
-                })
-            }
-        });*/
     });
 }

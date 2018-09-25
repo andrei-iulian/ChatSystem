@@ -19,6 +19,7 @@ module.exports = function(db, io) {
         });
 
         socket.on("add-message", (userData) => {
+            db.collection('Channels').updateOne({'Channel': userData.channel}, {$push: {'Chat': {type: 'message', text:userData.message}}});
             socket.broadcast.to(userData.channel).emit('message', {type: 'message', text:userData.message});
         });
     })
