@@ -25,7 +25,7 @@ export class UpdateUserComponent implements OnInit {
   constructor(private router: Router, private http: HttpClient) { }
 
   ngOnInit() {
-    this.nUser = localStorage.getItem('updateUser');
+    this.nUser = sessionStorage.getItem('updateUser');
     this.getUserData();
   }
 

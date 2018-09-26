@@ -16,6 +16,7 @@ export interface UserDataObject {
   Username: string;
   UserType: string;
   Groups: Array<string>;
+  Profile: string;
 }
 
 @Component({
@@ -24,6 +25,8 @@ export interface UserDataObject {
   styleUrls: ['./dash.component.css']
 })
 export class DashComponent implements OnInit {
+  selectedfile = null;
+  profile = null;
   modalType: string;
   username: string;
   nGroupName: string;
@@ -66,6 +69,27 @@ export class DashComponent implements OnInit {
     this.router.navigateByUrl('/login');
   }
 
+  onFileSelected(event) {
+    this.selectedfile = event.target.files[0];
+  }
+
+  Upload() {
+    const fd = new FormData();
+    fd.append('image', this.selectedfile, this.selectedfile.name);
+    this.http.post<any>('/api/Upload', fd).subscribe(res => {
+      if (res.result === 'NotVaild') {
+        alert('File type not valid');
+      } else if (res.result === 'Success') {
+        this.http.post<any>('/api/Profile', {user: this.username, file: this.selectedfile.name}).subscribe( response => {
+          if (response.success === true) {
+            this.profile = res.data.filename;
+            sessionStorage.setItem('profile', this.profile);
+          }
+        });
+      }
+    });
+  }
+
   // Function for updating a particular Users userType and adding a
   // user to a group
   UpdateUser() {
@@ -96,10 +120,6 @@ export class DashComponent implements OnInit {
 
   // Function for hiding the functionallity for creating a group if the
   // user doesn't have access to it
-  normieUser() {
-    const target = document.getElementById('btnGroup');
-    target.style.display = 'none';
-  }
 
   // Function for getting a users data to develop the dashboard for
   // them and displaying the groups and channels available
@@ -108,11 +128,11 @@ export class DashComponent implements OnInit {
       data => {
         if (data.success) {
           this.userData = JSON.parse(data.UserData);
+          this.profile = this.userData.Profile;
+          sessionStorage.setItem('profile', this.profile);
+          console.log(this.userData);
           for (const group of this.userData.Groups) {
             this.nGroups[group] = false;
-          }
-          if (this.userData.UserType === 'Normie') {
-            this.normieUser();
           }
         } else if (data.UserData === 'NotFound') {
           alert('Not a valid Username');

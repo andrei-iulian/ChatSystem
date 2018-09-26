@@ -10,17 +10,17 @@ module.exports = function(db, io) {
             socket.join(userData.channel);
 
             var str = "User-" + userData.user + ' Joined the Channel';
-            socket.broadcast.to(userData.channel).emit('message', {type: 'message', text:str})
+            socket.broadcast.to(userData.channel).emit('message', {type: 'admin', text:str})
         });
 
         socket.on("leave", (userData) => {
             var str = 'User-' + userData.user + ' Left the Channel';
-            socket.broadcast.to(userData.channel).emit('message', {type: 'message', text:str});
+            socket.broadcast.to(userData.channel).emit('message', {type: 'admin', text:str});
         });
 
         socket.on("add-message", (userData) => {
-            db.collection('Channels').updateOne({'Channel': userData.channel}, {$push: {'Chat': {type: 'message', text:userData.message}}});
-            socket.broadcast.to(userData.channel).emit('message', {type: 'message', text:userData.message});
+            db.collection('Channels').updateOne({'Channel': userData.channel}, {$push: {'Chat': {type: userData.type, text:userData.text, image: userData.image}}});
+            socket.broadcast.to(userData.channel).emit('message', userData);
         });
     })
 }

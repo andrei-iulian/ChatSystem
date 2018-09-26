@@ -43,7 +43,15 @@
     <div class="container">
       <div class= "row justify-content-md-center">
         <ul class="card mx-auto" style="width: 600px; height: 400px; overflow: scroll;">
-          <div *ngFor="let message of messages">{{message.text}}</div>
+          <div *ngFor="let message of messages">
+            <div *ngIf ="message.type === 'message'">
+              <img class="border border-primary rounded-circle" src="images\{{message.image}}" style="margin-left: -20px; margin-top: 10px; width: 50px; height: 50px;">
+               {{message.text}}
+            </div>
+            <div *ngIf ="message.type === 'admin'">
+              {{message.text}}
+            </div>
+          </div>
         </ul>
         <ul>
           <li class ="list-group-item mx-auto" style="width: 100px">Users</li>

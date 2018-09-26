@@ -67,26 +67,34 @@
       </div>
     </ng-template>
 
-    <nav *ngIf = "username" class="navbar-default" style="margin-top: 20px">
+    <nav *ngIf = "username" class="navbar-default" style="margin-top: 20px; margin-bottom: 50px">
       <div class="navbar-header mx-auto" style="width: 600px">
+        <img *ngIf="profile" class="border border-primary rounded-circle" src="images\{{profile}}" style="margin: 10px; width: 100px; height: 100px;">
           <div class="navbar-brand">
             <h2>{{username}}'s Dashboard</h2>
           </div>
           <button type="button" class="btn btn-default navbar-btn float-right" (click)="Logout()">Logout</button>
+          <div class="form-group row">
+              <div>
+                  <input type="file" class="form-control" (change)="onFileSelected($event)" name="uploadfile" id = "uploadfile">
+              </div>
+              <button class = "btn btn-primary" style="margin-right: 10px" (click) = "Upload()">Upload</button>
+            </div>
       </div>
     </nav>
-
-    <div *ngIf = "userData.UserType === 'Super'" class = 'mx-auto' style="width: 600px">
-        <button type="button" class="btn btn-success navbar-btn float-right" (click)="CreateUser()">Create User</button>
-        <input class="form-control float-right" style="width: 110px; margin-right: 5%"  type="text" [(ngModel)]='nUser' placeholder="Username" name='nUser'>
-        <button type="button" class="btn btn-success navbar-btn float-right" (click)="UpdateUser()">Update User</button>
-    </div>
-    
+    <div *ngIf = "userData">
+      <div *ngIf = "userData.UserType === 'Super'" class = 'mx-auto' style="width: 600px">
+          <button type="button" class="btn btn-success navbar-btn float-right" (click)="CreateUser()">Create User</button>
+          <input class="form-control float-right" style="width: 110px; margin-right: 5%"  type="text" [(ngModel)]='nUser' placeholder="Username" name='nUser'>
+          <button type="button" class="btn btn-success navbar-btn float-right" (click)="UpdateUser()">Update User</button>
+      </div>
+    </div>  
+      
     <div *ngIf = "userData" class="groups">
       <div *ngFor="let group of userData.Groups">
           <app-group userType = {{userData.UserType}} groupName = {{group}} ></app-group>
       </div>
-      <button class="btn btn-primary" id="btnGroup" (click)="modalType = 'Group'; open(content)">Create Group</button>
+      <button *ngIf ="userData.UserType !== 'Normie'" class="btn btn-primary" id="btnGroup" (click)="modalType = 'Group'; open(content)">Create Group</button>
     </div>
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>

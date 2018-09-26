@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { APIResponse } from '../dash/dash.component';
-import { SocketService } from '../socket.service';
+import { SocketService, Message } from '../socket.service';
 
 export interface ChannelData {
   channelData: string;
@@ -28,6 +28,7 @@ export interface ChannelObject {
 })
 
 export class ChannelComponent implements OnInit, OnDestroy {
+  profile = null;
   type: string;
   nUserName: string;
   userType: string;
@@ -45,6 +46,7 @@ export class ChannelComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.userType = sessionStorage.getItem('type');
     this.username = sessionStorage.getItem('username');
+    this.profile = sessionStorage.getItem('profile');
     this.group = sessionStorage.getItem('group');
     this.channel = sessionStorage.getItem('channel');
     this.channelName = this.group + ':' + this.channel;
@@ -87,8 +89,9 @@ export class ChannelComponent implements OnInit, OnDestroy {
 
   SendMessage() {
     const str = this.username + '- ' + this.message;
-    this.messages.push({type: 'message', text: str});
-    this.sockServ.sendMessage(this.channelName, str);
+    const msg = {channel: this.channelName, type: 'message', text: str, image: this.profile};
+    this.messages.push({type: msg.type, text: msg.text, image: msg.image});
+    this.sockServ.sendMessage(msg);
     this.message = '';
   }
 

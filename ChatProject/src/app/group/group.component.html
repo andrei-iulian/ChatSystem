@@ -40,7 +40,7 @@
       </div>
      
 
-      <div id="collapseOne" [ngbCollapse]="!isCollapsed" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div *ngIf="groupData" id="collapseOne" [ngbCollapse]="!isCollapsed" aria-labelledby="headingOne" data-parent="#accordionExample">
         <div class="card-body">
           <div *ngFor="let channel of groupData.Channels">
             <div style="margin-bottom: 20px">

@@ -1,4 +1,44 @@
-module.exports = function(app, fs, db) {
+module.exports = function(app, formidable, db) {
+
+    app.post('/api/Upload', (req, res) => {
+        var form = new formidable.IncomingForm({ uploadDir: './userimages'});
+        form.keepExtenstions = true;
+        
+        form.onPart = function (part) {
+            if(!part.filename || part.filename.match(/\.(jpg|jpeg|png)$/i)) {
+                form.handlePart(part);
+            }
+            else {
+                console.log(part.filename + ' is not allowed');
+                res.send({result: 'NotValid'});
+            }
+        }
+
+        form.on('error', (err) => {
+            throw err;
+            res.send({result: "Failed"});
+        });
+
+        form.on('fileBegin', (name, file) => {
+            file.path = form.uploadDir + '/' + file.name;
+        });
+
+        form.on('file', (field, file) => {
+            res.send({
+                result: 'Success',
+                data: {'filename': file.name}
+            });
+        });
+
+        form.parse(req);
+    });
+
+    app.post('/api/Profile', (req, res) => {
+        user = req.body.user;
+        file = req.body.file;
+        db.collection('Users').updateOne({"Username": user}, {$set: {'Profile': file}});
+        res.send({success: true});
+    });
 
     // Function for authenticating the User
     app.post('/api/UserAuth', (req, res) => {
@@ -178,7 +218,7 @@ module.exports = function(app, fs, db) {
             if (resp.length > 0) {
                 res.send({result: 'Exists'});
             } else {
-                db.collection('Users').insertOne({Username: user, Password: password, Email: email, UserType: type,  Groups: groupArray}, (e, r) => {
+                db.collection('Users').insertOne({Username: user, Password: password, Email: email, Profile: '', UserType: type,  Groups: groupArray}, (e, r) => {
                     if (e) {
                         res.send({result: 'Fail'});
                         return console.log(e);

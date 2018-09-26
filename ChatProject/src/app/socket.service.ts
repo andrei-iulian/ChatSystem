@@ -2,6 +2,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import * as io from 'socket.io-client';
 
+export interface Message {
+  channel: string;
+  type: string;
+  text: string;
+  image: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,8 +22,8 @@ export class SocketService {
     this.socket.emit('leave', {'user': user, 'channel': channel});
   }
 
-  sendMessage(channel: string, message: string) {
-    this.socket.emit('add-message', {'channel': channel, 'message': message});
+  sendMessage(message: Message) {
+    this.socket.emit('add-message', message);
   }
 
   getMessages(user: string, channel: string) {
