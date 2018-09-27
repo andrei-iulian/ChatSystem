@@ -29,6 +29,7 @@ export interface ChannelObject {
 
 export class ChannelComponent implements OnInit, OnDestroy {
   profile = null;
+  selectedfile = null;
   type: string;
   nUserName: string;
   userType: string;
@@ -58,6 +59,30 @@ export class ChannelComponent implements OnInit, OnDestroy {
     this.getChannelData();
   }
 
+  onFileSelected(event) {
+    this.selectedfile = event.target.files[0];
+  }
+
+  SendImage() {
+    const fd = new FormData();
+    fd.append('image', this.selectedfile, this.selectedfile.name);
+    this.http.post<any>('/api/Upload', fd).subscribe(res => {
+      if (res.result === 'NotValid') {
+        alert('File type not valid');
+      } else if (res.result === 'Success') {
+        const msg = {channel: this.channelName, type: 'image', text: this.profile, image: this.selectedfile.name};
+        this.http.post<any>('/api/ImgMessage', msg).subscribe( response => {
+          if (response.success === true) {
+            this.sockServ.sendMessage(msg);
+            this.messages.push(msg);
+          }
+        });
+      } else {
+        alert('Error Sending Image');
+      }
+    });
+  }
+
   ngOnDestroy() {
     if (this.connection) {
       this.sockServ.leaveChannel(this.username, this.channelName);
@@ -75,7 +100,6 @@ export class ChannelComponent implements OnInit, OnDestroy {
   open(content, type: string) {
     this.modalService.open(content, {ariaLabelledBy: 'ChannelTitle'}).result.then((result) => {
       if (result === 'Create') {
-        console.log(this.type);
         if (this.nUserName !== '') {
           if (this.type === 'Add') {
             this.AddUser();
@@ -149,7 +173,6 @@ export class ChannelComponent implements OnInit, OnDestroy {
         if (data.success === true) {
           this.channelData = JSON.parse(data.channelData);
           this.messages.push.apply(this.messages, this.channelData.Chat);
-          console.log(this.messages);
         } else {
           alert('Failed to Retrieve Channel Data');
           this.Back();

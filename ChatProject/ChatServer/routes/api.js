@@ -40,6 +40,16 @@ module.exports = function(app, formidable, db) {
         res.send({success: true});
     });
 
+    app.post('/api/ImgMessage', (req, res) => {
+        channel = req.body.channel;
+        type = req.body.type;
+        text = req.body.text;
+        image = req.body.image;
+
+        db.collection('Channels').updateOne({'Channel': channel}, {$addToSet: {'Chat': {'type': type, 'text': text, 'image': image}}});
+        res.send({success: true});
+    });
+
     // Function for authenticating the User
     app.post('/api/UserAuth', (req, res) => {
         user = req.body.user;

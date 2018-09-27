@@ -43,6 +43,10 @@ export class UpdateUserComponent implements OnInit {
     );
   }
 
+  Back() {
+    this.router.navigateByUrl('/dash');
+  }
+
   getUserData() {
   this.http.post<User>('/api/UserData', {username: this.nUser}).subscribe(
     data => {

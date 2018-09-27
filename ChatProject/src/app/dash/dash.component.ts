@@ -77,7 +77,7 @@ export class DashComponent implements OnInit {
     const fd = new FormData();
     fd.append('image', this.selectedfile, this.selectedfile.name);
     this.http.post<any>('/api/Upload', fd).subscribe(res => {
-      if (res.result === 'NotVaild') {
+      if (res.result === 'NotValid') {
         alert('File type not valid');
       } else if (res.result === 'Success') {
         this.http.post<any>('/api/Profile', {user: this.username, file: this.selectedfile.name}).subscribe( response => {
@@ -130,7 +130,6 @@ export class DashComponent implements OnInit {
           this.userData = JSON.parse(data.UserData);
           this.profile = this.userData.Profile;
           sessionStorage.setItem('profile', this.profile);
-          console.log(this.userData);
           for (const group of this.userData.Groups) {
             this.nGroups[group] = false;
           }

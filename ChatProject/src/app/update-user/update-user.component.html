@@ -7,9 +7,10 @@
   <body>
     <nav *ngIf = "nUser" class="navbar-default" style="margin-top: 20px">
       <div class="navbar-header mx-auto" style="width: 600px">
-          <div class="navbar-brand">
-            <h2>Update User</h2>
-          </div>
+        <button type="button" class="btn btn-default mx-auto float-right" (click)="Back()">Back</button>
+        <div class="navbar-brand row">
+          <h2>Update User</h2>
+        </div>
       </div>
     </nav>
     <div *ngIf = "nPassword" class='mx-auto col-8'>

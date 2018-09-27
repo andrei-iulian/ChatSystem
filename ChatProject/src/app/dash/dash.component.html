@@ -75,11 +75,11 @@
           </div>
           <button type="button" class="btn btn-default navbar-btn float-right" (click)="Logout()">Logout</button>
           <div class="form-group row">
-              <div>
-                  <input type="file" class="form-control" (change)="onFileSelected($event)" name="uploadfile" id = "uploadfile">
-              </div>
-              <button class = "btn btn-primary" style="margin-right: 10px" (click) = "Upload()">Upload</button>
+            <div>
+                <input type="file" class="form-control" (change)="onFileSelected($event)" name="uploadfile" id = "uploadfile">
             </div>
+            <button class = "btn btn-primary" style="margin-right: 10px" (click) = "Upload()">Upload</button>
+          </div>
       </div>
     </nav>
     <div *ngIf = "userData">

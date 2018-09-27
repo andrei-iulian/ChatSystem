@@ -23,6 +23,10 @@ export class CreateUserComponent implements OnInit {
     this.getGroupsData();
   }
 
+  Back() {
+    this.router.navigateByUrl('/dash');
+  }
+
   Submit() {
     this.http.post<APIResponse>('/api/CreateUser', {userName: this.nUser, userType: this.nUserType,
       password: this.nPassword, email: this.nEmail, groups: JSON.stringify(this.nGroups)}).subscribe(

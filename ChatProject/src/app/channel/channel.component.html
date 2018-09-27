@@ -40,9 +40,9 @@
       </ng-template>
 
 
-    <div class="container">
+    <div *ngIf="channelData" class="container">
       <div class= "row justify-content-md-center">
-        <ul class="card mx-auto" style="width: 600px; height: 400px; overflow: scroll;">
+        <ul class="card" style="width: 600px; height: 400px; overflow: scroll;">
           <div *ngFor="let message of messages">
             <div *ngIf ="message.type === 'message'">
               <img class="border border-primary rounded-circle" src="images\{{message.image}}" style="margin-left: -20px; margin-top: 10px; width: 50px; height: 50px;">
@@ -50,6 +50,10 @@
             </div>
             <div *ngIf ="message.type === 'admin'">
               {{message.text}}
+            </div>
+            <div *ngIf ="message.type === 'image'">
+                <img class="border border-primary rounded-circle" src="images\{{message.text}}" style="margin-left: -20px; margin-top: 10px; width: 50px; height: 50px;">
+                <img class="border border-info rounded" src="images\{{message.image}}" style="margin-left: -20px; margin: 10px; max-width: 450px; max-height: 250px;">
             </div>
           </div>
         </ul>
@@ -64,7 +68,7 @@
 
     <div class="container">
         <div class= "row justify-content-md-center">  
-          <div class="input-group mx-auto mb-3" style="width: 600px">
+          <div class="input-group mx-auto mb-3" style="width: 600px; margin: 10px">
               <input type="text" class="form-control" placeholder="message" [(ngModel)]="message" name='message'>
               <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="button" (click) = 'SendMessage()'>Send</button>
@@ -75,7 +79,14 @@
     </div>
 
     <div class = "mx-auto" style="width: 700px; height: 100px">
-      <button *ngIf="userType !== 'Normie'" class="btn bg-danger left-right" (click) = "DeleteChannel()">Delete Channel</button>
+      <div class="form-group row">
+        <div>
+          <input type="file" class="form-control" (change)="onFileSelected($event)" name="uploadfile" id = "uploadfile">
+        </div>
+        <button class = "btn btn-primary" style="margin-left: 20px" (click) = "SendImage()">Send Image</button>
+      </div>
+
+      <button *ngIf="userType !== 'Normie'" class="btn bg-danger float-left" (click) = "DeleteChannel()">Delete Channel</button>
       
       <div>
           <button *ngIf="userType !== 'Normie'" class="btn bg-danger float-right" style="margin: 10px" (click) = "type = 'Del'; open(content, 'Del')">Remove User</button>
