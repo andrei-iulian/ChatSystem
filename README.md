@@ -8,10 +8,10 @@ to break (luckily it did not occur during development).
 ### The Git repository is laid out in the following manner:
 * ChatProject - The main folder, contains the package.json file for the Angular project called ChatProject as well as:
   * ChatServer - The folder contiaining all of the files for the Server including the package.json for the server.
-    * routes - Folder containing the Users.json file that stores all of the User, Group and Channel data. Also contains 
-    the api.js file which houses all of the REST api functionallity for Server Client communication.
-    
-    * server.js - File that contains the server functionallity for loading the Angular project from its distribution folder.
+    * routes 
+      * api.js - File which houses all of the REST api functionallity for Server-Client communication.
+      * mongo.js - File that contains functions, called my the REST api functions, for accessing the 'Mongo' database to retrieve,               update, delete and remove. 
+     * server.js - File that contains the server functionallity for loading the Angular project from its distribution folder.
     
   * src
     * app
