@@ -16,7 +16,7 @@ to break (luckily it did not occur during development).
   * src
     * app
       * channel - Folder that contains the channel component, it provides the functionality for chatting, adding and deleting a 
-      user from a group, deleting a channel (access to functionality depended on type of user).
+      user from a group, deleting a channel (access to functionality depended on type of user). As well as messaging between other users in the channel
       
       * dash - Folder that contains the dash component, the dashboard for the user, shows the groups and channels the user is a 
       part of as well as buttons for deleting groups, joining groups, creating users and updating users. 
@@ -24,8 +24,12 @@ to break (luckily it did not occur during development).
       * group - Folder that contains the group component, component that gets created by the dashboard to show details for a
       particular group.
       
-      * login - Folder that contains the login component, inital page that accepts a users username and sends the user to the 
-      dashboard (the dashboard sends the user back to the login page if the user doesnt exist).
+      * login - Folder that contains the login component, inital page that accepts a users username and password, if a valid user login was provided the user is sent to the dashboard page.
+      
+      * create-user - Folder that contains the create user component, a page that allows a super user to create a new user.
+      
+      * update-user - Folder that contains the update user component, a page that, given a user name loads that users information and allows the super user to update any and all user properties.
+   * socket.service.ts - File that is a Service for using sockets for communication between the client and server, used by the Channel component.
 
 ### Installation:
 To install the project from git:
@@ -53,15 +57,34 @@ either for sending data back and forth between the client and users and storing 
   * ChannelData Interface - channelData: string, success: boolean
   * ChannelResponse Interface - success: boolean
   * ChannelObject Interface - Channel: string, Users: object, Data: object
+
+* Update-User Component
+  *  Groups Interface - Groups: string, success: boolean 
   
 ## Angular Architecture
-There are four Angular components: Login, Dash, Group and Channel. The idea behind having these four components instead of just having one component is to modularise the project ensuring that each component handles specific functionality and is understandable (not having 400+ lines of html in one component).The models (data) were mentioned above in the 'Data Structures' heading, similar to the components models were created with the idea of modularity and code reuse were some interfaces are exported to other components expecting similar return values. No services were implemented as there weren't any that came to mind where it would be requried. When chat communication gets included then a service will likely be created for the socket connection and message passing. 
+There are four Angular components: Login, Dash, Group and Channel. The idea behind having these four components instead of just having one component is to modularise the project ensuring that each component handles specific functionality and is understandable (not having 400+ lines of html in one component).The models (data) were mentioned above in the 'Data Structures' heading, similar to the components models were created with the idea of modularity and code reuse were some interfaces are exported to other components expecting similar return values. A service was created for setting up a socket connection with the server so that messages can be passed back and forth between users within each channel.
 
 ## REST API Functions
+
+* '/api/Upload' - Function that, given a Form Data object, saves a image into the 'userimages' folder as long as the file type is jpg, jpeg or png.
+  * Parameters= form: FormData
+  * Return= result: string
+
+* '/api/Profile' - Function for updating a users profile picture within the database given a username and a file name that exists in the 'userimages' folder.
+  * Parameters= user: string, file: string
+  * Return= success: boolean
+
+* '/api/UserAuth' - Function for authenticating a user login by checking it both the provided username and password belong to a user in the database.
+  * Parameters= username: string, password: string
+  * Return= result: string
 
 * '/api/UserData' - Function for returning all the relevant User data, the 'UserData' string is a JSON object stringified
   * Parameters= username: string
   * Return= UserData: string, success: boolean
+  
+* '/api/Groups' - Function that returns all of the Groups within the database so a Super user can update which groups a user is in.
+  * Parameters= null
+  * Return= Groups: Array<string>
 
 * '/api/GroupData' - Function for returning the group data for a particular group, the 'GroupData' string is a JSON object stringified 
 on success, on readFile failure 'GroupData' is blank and on no group by that name 'GroupData' is 'NotFound'
@@ -74,17 +97,19 @@ on success, on readFile failure 'ChannelData' is blank
   * Return= ChannelData: string, success: boolean
 
 * '/api/CreateChannel' - Function for creating a new channel, returns 'Fail' on read or write failure, 'Exists' when a channel by that name is already in the group and 'Success' when the channel has been created.
-  * Parameters= groupName: string, channel: string, user: string
+  * Parameters= groups: Array<string>, type: string, user: string, email: string, password: string
   * Return= result: string
  
-* '/api/UpdateUser' - Function that hands both user updating and user creation depending on the value of the update boolean parameter, returns 'ReadFail' on readFail and writeFail, 'UserExists' when trying to create a user (update is false), 'GroupFailed' when the group passed to the function doesn't exist, 'Success' when creating or updating a user
+* '/api/UpdateUser' - Function that handles updating a user returns 'ReadFail' on readFail and writeFail, 'UserExists' when trying to create a user
   * Parameters= group: string, type: string, user: string, update: boolean
+  * Return= result: string
   
+* '/api/CreateUser' - Function that handles creating a new user.
+  * Parameters= groups: Array<string>, type: string, user: string, email: string, password: string
   * Return= result: string
  
-* '/api/AddUserChannel' - Function for adding a user to a channel, function creates the user if they doesnt exist, returns 'false' on failure and 'true' on success
+* '/api/AddUserChannel' - Function for adding a user to a channel, returns 'false' on failure and 'true' on success
   * Parameters= channel: string, group: string, user: string
-  
   * Return= success: boolean
 
 * '/api/AddGroup' - Function for adding a new group, returns 'ReadFail' on readFail and writeFail, 'Exists' when the given group name already exists, 'Success' when the group was created
