@@ -71,12 +71,8 @@ export class ChannelComponent implements OnInit, OnDestroy {
         alert('File type not valid');
       } else if (res.result === 'Success') {
         const msg = {channel: this.channelName, type: 'image', text: this.profile, image: this.selectedfile.name};
-        this.http.post<any>('/api/ImgMessage', msg).subscribe( response => {
-          if (response.success === true) {
-            this.sockServ.sendMessage(msg);
-            this.messages.push(msg);
-          }
-        });
+        this.sockServ.sendMessage(msg);
+        this.messages.push(msg);
       } else {
         alert('Error Sending Image');
       }

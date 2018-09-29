@@ -141,7 +141,7 @@ export class DashComponent implements OnInit {
         }
       },
       error => {
-        alert('failed');
+        alert('Waaaat');
       });
   }
 
